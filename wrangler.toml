@@ -1,0 +1,40 @@
+# ツチノート - Cloudflare Workers設定
+name = "tsuchinote"
+main = "worker/src/index.js"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+# 開発用ローカルポート
+[dev]
+port = 8788
+
+# 静的アセット（PWAフロントエンド）
+[assets]
+directory = "./public"
+
+# D1データベース バインディング
+[[d1_databases]]
+binding = "DB"
+database_name = "tsuchinote-db"
+database_id = ""  # wrangler d1 create 後にIDを記入
+
+# R2オブジェクトストレージ バインディング（画像等）
+[[r2_buckets]]
+binding = "STORAGE"
+bucket_name = "tsuchinote-storage"
+
+# 環境変数（シークレットは wrangler secret put で設定）
+[vars]
+APP_URL = "https://tsuchinote.pages.dev"
+
+# 本番環境
+[env.production]
+name = "tsuchinote"
+[env.production.vars]
+APP_URL = "https://tsuchinote.pages.dev"
+
+# ステージング環境
+[env.staging]
+name = "tsuchinote-staging"
+[env.staging.vars]
+APP_URL = "https://staging.tsuchinote.pages.dev"

@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ツチノートは、畑の天気と今日やることを毎朝教えてくれる家庭菜園のおともアプリです。">
+  <meta name="theme-color" content="#2d6a4f">
+  <title>ツチノート | 畑の天気と今日やること、毎朝届けます</title>
+  <link rel="canonical" href="https://tsuchinote.app/">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" sizes="192x192" href="/icons/icon-192.svg">
+  <link rel="apple-touch-icon" href="/icons/icon-192.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green-dark: #1b4332;
+      --green-mid: #2d6a4f;
+      --green-light: #40916c;
+      --green-pale: #b7e4c7;
+      --green-bg: #f0faf4;
+      --white: #ffffff;
+      --gray-50: #f8faf9;
+      --gray-100: #f1f5f3;
+      --gray-200: #e2e8e4;
+      --gray-400: #94a39a;
+      --gray-600: #4a5a50;
+      --gray-800: #1e2d24;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --radius: 12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--gray-800);
+      background: var(--white);
+      line-height: 1.8;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    img, svg { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+
+    .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+    .text-center { text-align: center; }
+
+    /* ボタン */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      font-family: inherit; font-weight: 600; border-radius: 8px;
+      cursor: pointer; border: 2px solid transparent;
+      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+      text-decoration: none; line-height: 1.4;
+    }
+    .btn--primary {
+      background: var(--green-mid); color: var(--white);
+      border-color: var(--green-mid);
+    }
+    .btn--primary:hover { background: var(--green-dark); border-color: var(--green-dark); }
+    .btn--outline {
+      background: transparent; color: var(--green-mid);
+      border-color: var(--green-mid);
+    }
+    .btn--outline:hover { background: var(--green-mid); color: var(--white); }
+    .btn--ghost {
+      background: transparent; color: var(--green-mid);
+      border-color: transparent;
+    }
+    .btn--ghost:hover { background: var(--green-bg); }
+    .btn--sm { padding: 6px 16px; font-size: 0.85rem; }
+    .btn--lg { padding: 14px 32px; font-size: 1.05rem; }
+    .btn--full { width: 100%; }
+
+    /* ヘッダー */
+    .header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: var(--white);
+      transition: box-shadow 0.3s ease;
+    }
+    .header--scrolled { box-shadow: var(--shadow-sm); }
+    .header__inner {
+      max-width: 960px; margin: 0 auto; padding: 0 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 56px;
+    }
+    .header__logo {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 1.1rem; font-weight: 700; color: var(--green-dark);
+    }
+    .header__nav { display: flex; gap: 24px; }
+    .header__nav-link {
+      font-size: 0.88rem; font-weight: 500; color: var(--gray-600);
+      transition: color 0.2s;
+    }
+    .header__nav-link:hover { color: var(--green-mid); }
+    .header__actions { display: flex; align-items: center; gap: 8px; }
+
+    .header__hamburger {
+      display: none; background: none; border: none; cursor: pointer;
+      width: 32px; height: 32px; position: relative;
+      flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+    }
+    .header__hamburger-line {
+      display: block; width: 20px; height: 2px;
+      background: var(--gray-800); border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+    .header__hamburger.is-active .header__hamburger-line:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+    .header__hamburger.is-active .header__hamburger-line:nth-child(2) { opacity: 0; }
+    .header__hamburger.is-active .header__hamburger-line:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
+    .mobile-menu {
+      display: none; position: fixed; top: 56px; left: 0; right: 0;
+      background: var(--white); padding: 20px;
+      box-shadow: var(--shadow-md); z-index: 99;
+      flex-direction: column; gap: 12px;
+      transform: translateY(-10px); opacity: 0;
+      transition: all 0.3s ease; pointer-events: none;
+    }
+    .mobile-menu.is-open {
+      transform: translateY(0); opacity: 1; pointer-events: auto;
+    }
+    .mobile-menu__link {
+      display: block; padding: 12px 0; font-weight: 500;
+      color: var(--gray-600); border-bottom: 1px solid var(--gray-200);
+    }
+    .mobile-menu__actions { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+
+    /* ヒーロー */
+    .hero {
+      padding: 120px 0 72px;
+      background: var(--green-bg);
+    }
+    .hero__inner { max-width: 640px; }
+    .hero__catch {
+      font-size: clamp(1.5rem, 4vw, 2.4rem);
+      font-weight: 800; line-height: 1.5; margin-bottom: 20px;
+    }
+    .hero__em { color: var(--green-mid); }
+    .hero__sub {
+      font-size: clamp(0.92rem, 1.8vw, 1.05rem);
+      color: var(--gray-600); margin-bottom: 36px; line-height: 1.9;
+    }
+    .hero__cta { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+    .hero__note { font-size: 0.78rem; color: var(--gray-400); }
+
+    /* セクション */
+    .section { padding: 72px 0; }
+    .section--pale { background: var(--green-bg); }
+    .section--narrow { padding: 56px 0; }
+    .section__title {
+      font-size: clamp(1.25rem, 3vw, 1.7rem);
+      font-weight: 700; margin-bottom: 12px;
+    }
+    .section__lead {
+      font-size: 0.95rem; color: var(--gray-600);
+      margin-bottom: 40px; line-height: 1.8;
+    }
+
+    /* 悩みリスト */
+    .problem-list {
+      max-width: 640px; margin: 0 auto 24px;
+    }
+    .problem-list__item {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--gray-200);
+      font-size: 0.95rem;
+      color: var(--gray-600);
+      line-height: 1.8;
+    }
+    .problem-list__item:last-child { border-bottom: none; }
+    .problem-list__item strong {
+      color: var(--gray-800);
+      font-weight: 600;
+    }
+    .problem-list__footer {
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--gray-600);
+    }
+
+    /* 使い方 */
+    .how-list {
+      display: flex; flex-direction: column; gap: 32px;
+      max-width: 600px; margin: 0 auto;
+    }
+    .how-item { display: flex; align-items: flex-start; gap: 20px; }
+    .how-num {
+      flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%;
+      background: var(--green-mid); color: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; font-weight: 800;
+    }
+    .how-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 4px; }
+    .how-desc { font-size: 0.9rem; color: var(--gray-600); line-height: 1.7; }
+
+    /* 声 */
+    .voice-list {
+      max-width: 640px; margin: 0 auto;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .voice-item {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .voice-item__text {
+      font-size: 0.92rem; line-height: 1.8; margin-bottom: 10px;
+    }
+    .voice-item__author {
+      font-size: 0.8rem; color: var(--gray-400); font-weight: 500;
+    }
+
+    /* 料金 */
+    .pricing-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px; max-width: 600px; margin: 0 auto;
+    }
+    .pricing-card {
+      background: var(--white); border-radius: var(--radius);
+      padding: 28px 24px;
+      position: relative; border: 2px solid var(--gray-200);
+      display: flex; flex-direction: column;
+    }
+    .pricing-card--rec { border-color: var(--green-mid); }
+    .pricing-card__badge {
+      position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
+      background: var(--green-mid); color: var(--white);
+      font-size: 0.72rem; font-weight: 700; padding: 3px 14px;
+      border-radius: 20px;
+    }
+    .pricing-card__name { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+    .pricing-card__price {
+      font-size: 2.2rem; font-weight: 800; color: var(--green-mid); margin-bottom: 4px;
+    }
+    .pricing-card__price-unit { font-size: 0.9rem; font-weight: 500; color: var(--gray-600); }
+    .pricing-card__desc { font-size: 0.85rem; color: var(--gray-600); margin-bottom: 20px; }
+    .pricing-card__features { margin-bottom: 20px; flex-grow: 1; }
+    .pricing-card__feat {
+      display: flex; align-items: center; gap: 8px;
+      padding: 5px 0; font-size: 0.88rem;
+    }
+    .pricing-card__feat-check { color: var(--green-mid); font-weight: 700; }
+    .pricing-card__feat--off { color: var(--gray-400); }
+    .pricing-card__feat--off .pricing-card__feat-check { color: var(--gray-400); }
+
+    .payment-badges {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      justify-content: center; margin-top: 10px;
+    }
+    .payment-badge {
+      font-size: 0.68rem; color: var(--gray-600);
+      background: var(--gray-100); padding: 3px 8px; border-radius: 4px;
+    }
+
+    /* FAQ */
+    .faq-list { max-width: 640px; margin: 0 auto; }
+    .faq-item { border-bottom: 1px solid var(--gray-200); }
+    .faq-q {
+      width: 100%; display: flex; justify-content: space-between;
+      align-items: center; padding: 18px 0;
+      background: none; border: none; cursor: pointer;
+      font-family: inherit; font-size: 0.95rem; font-weight: 600;
+      color: var(--gray-800); text-align: left; line-height: 1.5;
+    }
+    .faq-icon {
+      font-size: 1.3rem; color: var(--green-mid);
+      transition: transform 0.3s ease; flex-shrink: 0; margin-left: 12px;
+    }
+    .faq-item.is-open .faq-icon { transform: rotate(45deg); }
+    .faq-a {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+      font-size: 0.88rem; color: var(--gray-600); line-height: 1.8;
+    }
+    .faq-item.is-open .faq-a { max-height: 300px; padding-bottom: 18px; }
+
+    /* CTA */
+    .cta-end {
+      padding: 72px 0;
+      background: var(--green-dark);
+      text-align: center;
+    }
+    .cta-end__title {
+      font-size: clamp(1.2rem, 2.8vw, 1.6rem);
+      font-weight: 700; color: var(--white); margin-bottom: 12px;
+    }
+    .cta-end__sub {
+      font-size: 0.95rem; color: rgba(255,255,255,0.65); margin-bottom: 28px;
+    }
+
+    /* CTAだけフェードイン */
+    .fade-in-cta {
+      opacity: 0; transform: translateY(12px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .fade-in-cta.is-visible { opacity: 1; transform: translateY(0); }
+
+    /* フッター */
+    .footer {
+      background: var(--gray-800); color: rgba(255,255,255,0.7);
+      padding: 40px 0 20px;
+    }
+    .footer__inner {
+      display: grid; grid-template-columns: 2fr 1fr 1fr;
+      gap: 32px; margin-bottom: 28px;
+    }
+    .footer__logo { font-size: 1.1rem; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+    .footer__desc { font-size: 0.82rem; line-height: 1.7; }
+    .footer__nav-title {
+      font-size: 0.78rem; font-weight: 700; color: var(--white);
+      margin-bottom: 10px; letter-spacing: 0.03em;
+    }
+    .footer__nav-link {
+      display: block; font-size: 0.82rem; padding: 3px 0;
+      color: rgba(255,255,255,0.55); transition: color 0.2s;
+    }
+    .footer__nav-link:hover { color: var(--white); }
+    .footer__bottom {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 16px;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 12px; font-size: 0.75rem;
+    }
+    .footer__legal { display: flex; gap: 16px; }
+    .footer__legal-link { color: rgba(255,255,255,0.45); transition: color 0.2s; }
+    .footer__legal-link:hover { color: var(--white); }
+
+    @media (max-width: 768px) {
+      .header__nav { display: none; }
+      .header__actions .btn--ghost,
+      .header__actions .btn--primary { display: none; }
+      .header__hamburger { display: flex; }
+      .mobile-menu { display: flex; }
+      .hero { padding: 96px 0 56px; }
+      .footer__inner { grid-template-columns: 1fr; gap: 20px; }
+      .footer__bottom { flex-direction: column; text-align: center; }
+      .footer__legal { justify-content: center; }
+    }
+
+    @media (min-width: 769px) {
+      .mobile-menu { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="header" id="header" role="banner">
+    <div class="header__inner">
+      <a href="/" class="header__logo" aria-label="ツチノート トップページ">
+        ツチノート
+      </a>
+      <nav class="header__nav" aria-label="メインナビゲーション">
+        <a href="#features" class="header__nav-link">使い方</a>
+        <a href="#pricing" class="header__nav-link">料金</a>
+        <a href="#faq" class="header__nav-link">FAQ</a>
+      </nav>
+      <div class="header__actions">
+        <a href="app.html#/login" class="btn btn--ghost btn--sm">ログイン</a>
+        <a href="app.html" class="btn btn--primary btn--sm">はじめる</a>
+        <button class="header__hamburger" id="hamburger" aria-label="メニューを開く" aria-expanded="false" aria-controls="mobile-menu">
+          <span class="header__hamburger-line" aria-hidden="true"></span>
+          <span class="header__hamburger-line" aria-hidden="true"></span>
+          <span class="header__hamburger-line" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="mobile-menu" id="mobile-menu" role="navigation" aria-label="モバイルナビゲーション">
+    <a href="#features" class="mobile-menu__link">使い方</a>
+    <a href="#pricing" class="mobile-menu__link">料金</a>
+    <a href="#faq" class="mobile-menu__link">FAQ</a>
+    <div class="mobile-menu__actions">
+      <a href="app.html#/login" class="btn btn--outline btn--full">ログイン</a>
+      <a href="app.html" class="btn btn--primary btn--full">無料ではじめる</a>
+    </div>
+  </div>
+
+  <main>
+    <!-- ヒーロー -->
+    <section class="hero" id="hero">
+      <div class="container">
+        <div class="hero__inner">
+          <h1 class="hero__catch">
+            「明日、雨だっけ？」を<br>
+            <span class="hero__em">畑のそばで、毎朝。</span>
+          </h1>
+          <p class="hero__sub">
+            天気を見て、今日やることを教えてくれる。<br>
+            水やりのタイミングも、収穫どきも、もう迷わない。<br>
+            家庭菜園がちょっとラクになるアプリです。
+          </p>
+          <div class="hero__cta">
+            <a href="app.html" class="btn btn--primary btn--lg">無料ではじめる</a>
+            <a href="#features" class="btn btn--outline btn--lg">くわしく見る</a>
+          </div>
+          <p class="hero__note">カード登録なし・すぐ使えます</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 悩み -->
+    <section class="section" id="problem">
+      <div class="container">
+        <h2 class="section__title text-center">こんな経験、ありませんか？</h2>
+        <ul class="problem-list">
+          <li class="problem-list__item">
+            <strong>水やりのタイミング</strong> — 昨日たっぷりあげたのに今日は大雨。逆に晴れ続きで気づいたら枯れてた。
+          </li>
+          <li class="problem-list__item">
+            <strong>記録が続かない</strong> — 去年いつトマト植えたっけ。ノートに書いたはずなのに見つからない。
+          </li>
+          <li class="problem-list__item">
+            <strong>優先順位がわからない</strong> — 週末しか畑に行けない。やることが多すぎて何から手をつけるか毎回迷う。
+          </li>
+          <li class="problem-list__item">
+            <strong>天気の読み違い</strong> — 暑すぎて枯れた、霜でダメになった。天気をちゃんと見ておけばよかった。
+          </li>
+        </ul>
+        <p class="problem-list__footer">ツチノートは、こういう「ちょっとした困りごと」をまとめて引き受けます。</p>
+      </div>
+    </section>
+
+    <!-- 使い方 -->
+    <section class="section section--pale" id="features">
+      <div class="container">
+        <h2 class="section__title text-center">使い方</h2>
+        <p class="section__lead text-center">
+          登録して畑の場所を入れたら、あとは毎朝アプリを開くだけ。
+        </p>
+        <div class="how-list">
+          <div class="how-item">
+            <div class="how-num" aria-hidden="true">1</div>
+            <div>
+              <p class="how-title">畑の場所を入れる</p>
+              <p class="how-desc">住所を入力するだけ。その畑のピンポイント天気予報が届くようになります。</p>
+            </div>
+          </div>
+          <div class="how-item">
+            <div class="how-num" aria-hidden="true">2</div>
+            <div>
+              <p class="how-title">毎朝、今日やることが届く</p>
+              <p class="how-desc">天気に合わせて「水やりした方がいい」「今日は収穫日和」みたいな提案が来ます。</p>
+            </div>
+          </div>
+          <div class="how-item">
+            <div class="how-num" aria-hidden="true">3</div>
+            <div>
+              <p class="how-title">やったことをポチッと記録</p>
+              <p class="how-desc">ワンタップで作業記録。天気と一緒に残るから、来年「去年どうだったっけ？」がすぐ分かります。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 声 -->
+    <section class="section section--narrow">
+      <div class="container">
+        <h2 class="section__title text-center">使っている人の声</h2>
+        <p class="section__lead text-center">ベータ版テスターの方からいただいた感想です</p>
+        <div class="voice-list">
+          <div class="voice-item">
+            <p class="voice-item__text">
+              「朝コーヒー飲みながら今日やること確認するのが習慣になった。天気とセットで出てくるのがちょうどいい。」
+            </p>
+            <p class="voice-item__author">— 60代・週末菜園歴8年</p>
+          </div>
+          <div class="voice-item">
+            <p class="voice-item__text">
+              「水やりのタイミングが分からなかったけど、雨の前は止めてって教えてくれるから助かってる。」
+            </p>
+            <p class="voice-item__author">— 30代・ベランダ菜園はじめて1年</p>
+          </div>
+          <div class="voice-item">
+            <p class="voice-item__text">
+              「去年の記録が天気付きで残ってるのが地味にすごい。今年の植え付け時期の参考になった。」
+            </p>
+            <p class="voice-item__author">— 40代・家庭菜園歴3年</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 料金 -->
+    <section class="section section--pale" id="pricing">
+      <div class="container">
+        <h2 class="section__title text-center">料金</h2>
+        <p class="section__lead text-center">
+          基本は無料。もうちょっと使いたくなったらProへ。
+        </p>
+        <div class="pricing-grid">
+          <div class="pricing-card">
+            <p class="pricing-card__name">Free</p>
+            <p class="pricing-card__price">&yen;0<span class="pricing-card__price-unit">/月</span></p>
+            <p class="pricing-card__desc">まずはここから。</p>
+            <div class="pricing-card__features">
+              <div class="pricing-card__feat"><span class="pricing-card__feat-check">&#10003;</span><span>畑1つまで</span></div>
+              <div class="pricing-card__feat"><span class="pricing-card__feat-check">&#10003;</span><span>毎日の天気予報</span></div>
+              <div class="pricing-card__feat"><span class="pricing-card__feat-check">&#10003;</span><span>今日の作業提案</span></div>
+              <div class="pricing-card__feat"><span class="pricing-card__feat-check">&#10003;</span><span>作業記録（直近30日）</span></div>
+              <div class="pricing-card__feat pricing-card__feat--off"><span class="pricing-card__feat-check">—</span><span>週間カレンダー</span></div>
+              <div class="pricing-card__feat pricing-card__feat--off"><span class="pricing-card__feat-check">—</span><span>記録エクスポート</span></div>
+            </div>
+            <a href="app.html" class="btn btn--outline btn--full">無料ではじめる</a>
+          </div>
+          <div class="pricing-card pricing-card--rec">
+            <span class="pricing-card__badge">おすすめ</span>
+            <p class="pricing-card__name">Pro</p>
+            <p class="pricing-card__price">&yen;100<span class="pricing-card__price-unit">/月</span></p>
+            <p class="pricing-card__desc">畑が増えてきたら。</p>
+            <div class="pricing-card__features">
+              <div class="pricing-card__feat"><span class="pricing-card__feat-check">&#10003;</span><span>畑5つまで</span></div>
+              <div class="pricing-card__feat"><span class="pricing-card__feat-check">&#10003;</span><span>毎日の天気予報</span></div>
+              <div class="pricing-card__feat"><span class="pricing-card__feat-check">&#10003;</span><span>くわしい作業提案</span></div>
+              <div class="pricing-card__feat"><span class="pricing-card__feat-check">&#10003;</span><span>作業記録（無制限）</span></div>
+              <div class="pricing-card__feat"><span class="pricing-card__feat-check">&#10003;</span><span>週間カレンダー</span></div>
+              <div class="pricing-card__feat"><span class="pricing-card__feat-check">&#10003;</span><span>記録エクスポート</span></div>
+            </div>
+            <a href="app.html" class="btn btn--primary btn--full">Proではじめる</a>
+            <div class="payment-badges">
+              <span class="payment-badge">クレカ</span>
+              <span class="payment-badge">PayPay</span>
+              <span class="payment-badge">Apple Pay</span>
+              <span class="payment-badge">Google Pay</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section" id="faq">
+      <div class="container">
+        <h2 class="section__title text-center">よくある質問</h2>
+        <div class="faq-list">
+          <div class="faq-item">
+            <button class="faq-q" aria-expanded="false">
+              <span>天気予報ってどのくらい当たりますか？</span>
+              <span class="faq-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="faq-a">気象庁のデータをベースに、畑の場所に合わせたピンポイント予報を届けています。普段の天気予報アプリと同じくらいの精度です。</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" aria-expanded="false">
+              <span>通知っていつ届くんですか？</span>
+              <span class="faq-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="faq-a">毎朝6時です。設定から時間は変えられます。通知なしで、開いたときだけ見る使い方もできます。</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" aria-expanded="false">
+              <span>どんな野菜に対応してますか？</span>
+              <span class="faq-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="faq-a">トマト、きゅうり、なす、ピーマン、レタス、にんじん、じゃがいもなど、家庭菜園でよく育てる野菜に対応しています。順次追加していきます。</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" aria-expanded="false">
+              <span>無料のままでも使えますか？</span>
+              <span class="faq-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="faq-a">はい。畑1つで毎日の天気と作業提案を確認するだけならFreeで十分です。畑が増えたり記録をもっと残したくなったらProをどうぞ。</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" aria-expanded="false">
+              <span>やめたくなったらすぐやめられますか？</span>
+              <span class="faq-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="faq-a">はい。設定からワンタップで解約できます。解約しても月末まではProを使えて、そのあとFreeに戻るだけです。データは消えません。</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" aria-expanded="false">
+              <span>支払い方法は？</span>
+              <span class="faq-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="faq-a">クレジットカード（Visa / Mastercard / JCB / Amex）、PayPay、Apple Pay、Google Payに対応。決済はStripe経由です。カード情報はこちらで保存しません。</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-end">
+      <div class="container text-center">
+        <h2 class="cta-end__title">明日の畑仕事、ツチノートに聞いてみませんか。</h2>
+        <p class="cta-end__sub">無料プランですぐ始められます。</p>
+        <div class="fade-in-cta">
+          <a href="app.html" class="btn btn--primary btn--lg">無料ではじめる</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__inner">
+        <div>
+          <p class="footer__logo">ツチノート</p>
+          <p class="footer__desc">畑の天気と今日やること、毎朝届けます。</p>
+        </div>
+        <div>
+          <p class="footer__nav-title">サービス</p>
+          <a href="#features" class="footer__nav-link">使い方</a>
+          <a href="#pricing" class="footer__nav-link">料金</a>
+          <a href="#faq" class="footer__nav-link">FAQ</a>
+        </div>
+        <div>
+          <p class="footer__nav-title">運営</p>
+          <a href="https://rei-inc.jp" class="footer__nav-link" target="_blank" rel="noopener noreferrer">礼株式会社</a>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p>&copy; 2026 礼株式会社</p>
+        <div class="footer__legal">
+          <a href="terms.html" class="footer__legal-link">利用規約</a>
+          <a href="privacy.html" class="footer__legal-link">プライバシーポリシー</a>
+          <a href="legal.html" class="footer__legal-link">特定商取引法に基づく表記</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var hamburger = document.getElementById('hamburger');
+      var mobileMenu = document.getElementById('mobile-menu');
+      var header = document.getElementById('header');
+
+      if (hamburger && mobileMenu) {
+        hamburger.addEventListener('click', function () {
+          var isOpen = mobileMenu.classList.toggle('is-open');
+          hamburger.classList.toggle('is-active');
+          hamburger.setAttribute('aria-expanded', isOpen);
+        });
+        mobileMenu.querySelectorAll('.mobile-menu__link').forEach(function (link) {
+          link.addEventListener('click', function () {
+            mobileMenu.classList.remove('is-open');
+            hamburger.classList.remove('is-active');
+            hamburger.setAttribute('aria-expanded', 'false');
+          });
+        });
+      }
+
+      window.addEventListener('scroll', function () {
+        header.classList.toggle('header--scrolled', window.scrollY > 10);
+      });
+
+      document.querySelectorAll('.faq-q').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var item = btn.closest('.faq-item');
+          var isOpen = item.classList.toggle('is-open');
+          btn.setAttribute('aria-expanded', isOpen);
+        });
+      });
+
+      /* CTAだけフェードイン */
+      if ('IntersectionObserver' in window) {
+        var obs = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) {
+              e.target.classList.add('is-visible');
+              obs.unobserve(e.target);
+            }
+          });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.fade-in-cta').forEach(function (el) { obs.observe(el); });
+      } else {
+        document.querySelectorAll('.fade-in-cta').forEach(function (el) { el.classList.add('is-visible'); });
+      }
+    });
+  </script>
+</body>
+</html>

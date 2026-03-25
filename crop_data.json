@@ -1,0 +1,561 @@
+[
+  {
+    "id": "tomato",
+    "name": "トマト",
+    "category": "果菜類",
+    "growing_days": 150,
+    "min_temp": 10,
+    "max_temp": 35,
+    "frost_sensitive": 1,
+    "water_needs": "medium",
+    "planting_season": { "start_month": 4, "end_month": 5 },
+    "harvest_season": { "start_month": 7, "end_month": 10 },
+    "stages": [
+      { "name": "種まき・育苗", "start_day": 0, "end_day": 30, "description": "セルトレイに播種し、25〜30℃で発芽管理。本葉2枚でポット上げ", "tasks": ["播種", "保温管理", "水やり（霧吹き）", "ポット上げ"] },
+      { "name": "定植", "start_day": 30, "end_day": 45, "description": "本葉7〜8枚・第1花房開花頃に定植。株間45cm、深植えにする", "tasks": ["畝立て・マルチ張り", "元肥投入", "定植", "支柱立て", "たっぷり水やり"] },
+      { "name": "生育期", "start_day": 45, "end_day": 90, "description": "脇芽かき・誘引を継続。追肥は第3花房開花頃から2週間おき", "tasks": ["脇芽かき", "誘引", "追肥（2週間おき）", "水やり管理", "病害虫チェック"] },
+      { "name": "開花・着果", "start_day": 90, "end_day": 120, "description": "着果促進のためトマトトーンまたは振動受粉。摘果で1房4〜5果に", "tasks": ["受粉補助", "摘果", "追肥継続", "下葉かき", "尻腐れ対策（カルシウム）"] },
+      { "name": "収穫期", "start_day": 120, "end_day": 150, "description": "ヘタの際まで赤く色づいたら収穫。朝の涼しい時間帯がベスト", "tasks": ["収穫", "追肥継続", "水やり控えめ（甘み向上）", "病葉除去"] }
+    ]
+  },
+  {
+    "id": "mini_tomato",
+    "name": "ミニトマト",
+    "category": "果菜類",
+    "growing_days": 140,
+    "min_temp": 10,
+    "max_temp": 35,
+    "frost_sensitive": 1,
+    "water_needs": "medium",
+    "planting_season": { "start_month": 4, "end_month": 5 },
+    "harvest_season": { "start_month": 6, "end_month": 10 },
+    "stages": [
+      { "name": "種まき・育苗", "start_day": 0, "end_day": 28, "description": "セルトレイに播種し25〜30℃管理。本葉2枚でポット上げ", "tasks": ["播種", "保温管理", "水やり", "ポット上げ"] },
+      { "name": "定植", "start_day": 28, "end_day": 42, "description": "本葉7〜8枚で定植。株間40cm。2本仕立ても可", "tasks": ["畝立て・マルチ", "元肥投入", "定植", "支柱立て", "水やり"] },
+      { "name": "生育期", "start_day": 42, "end_day": 80, "description": "脇芽かき・誘引を継続。大玉より樹勢が強いため脇芽の管理重要", "tasks": ["脇芽かき", "誘引", "追肥（2週間おき）", "水やり", "病害虫チェック"] },
+      { "name": "開花・着果", "start_day": 80, "end_day": 110, "description": "花房あたり多数着果するため摘果は基本不要。裂果防止に水やり安定", "tasks": ["追肥", "水やり安定化", "下葉かき", "病害虫防除"] },
+      { "name": "収穫期", "start_day": 110, "end_day": 140, "description": "完熟してから収穫。房ごと収穫も可。秋まで長期間採れる", "tasks": ["収穫", "追肥継続", "枯葉除去", "水やり"] }
+    ]
+  },
+  {
+    "id": "cucumber",
+    "name": "きゅうり",
+    "category": "果菜類",
+    "growing_days": 100,
+    "min_temp": 12,
+    "max_temp": 35,
+    "frost_sensitive": 1,
+    "water_needs": "high",
+    "planting_season": { "start_month": 4, "end_month": 6 },
+    "harvest_season": { "start_month": 6, "end_month": 9 },
+    "stages": [
+      { "name": "種まき・育苗", "start_day": 0, "end_day": 25, "description": "ポットに2粒播種、25〜30℃管理。本葉1枚で間引き1本立て", "tasks": ["播種", "保温管理", "水やり", "間引き"] },
+      { "name": "定植", "start_day": 25, "end_day": 35, "description": "本葉3〜4枚で定植。株間60cm。ネットまたは支柱設置", "tasks": ["畝立て・マルチ", "元肥投入", "定植", "ネット・支柱設置", "水やり"] },
+      { "name": "生育期", "start_day": 35, "end_day": 60, "description": "つる誘引、5節以下の雌花・脇芽は除去。水切れ厳禁", "tasks": ["つる誘引", "下部の脇芽・雌花除去", "水やり（毎日）", "追肥（週1）", "病害虫チェック"] },
+      { "name": "開花・着果", "start_day": 60, "end_day": 80, "description": "雌花が連続して咲く。曲がり果や変形果は早めに摘果", "tasks": ["追肥", "水やり（たっぷり）", "摘果", "べと病・うどんこ病対策"] },
+      { "name": "収穫期", "start_day": 80, "end_day": 100, "description": "開花後7〜10日、長さ20cm程度で収穫。採り遅れると株が疲れる", "tasks": ["毎日収穫", "水やり", "追肥継続", "古い葉の除去"] }
+    ]
+  },
+  {
+    "id": "eggplant",
+    "name": "なす",
+    "category": "果菜類",
+    "growing_days": 160,
+    "min_temp": 12,
+    "max_temp": 35,
+    "frost_sensitive": 1,
+    "water_needs": "high",
+    "planting_season": { "start_month": 4, "end_month": 5 },
+    "harvest_season": { "start_month": 7, "end_month": 10 },
+    "stages": [
+      { "name": "種まき・育苗", "start_day": 0, "end_day": 40, "description": "発芽適温25〜30℃。育苗期間が長いため早めに播種。接ぎ木苗推奨", "tasks": ["播種", "保温管理（加温育苗）", "水やり", "ポット上げ"] },
+      { "name": "定植", "start_day": 40, "end_day": 55, "description": "本葉6〜7枚・一番花開花頃に定植。株間60cm。深植えしない", "tasks": ["畝立て・マルチ", "元肥投入（多め）", "定植", "支柱立て", "水やり"] },
+      { "name": "生育期", "start_day": 55, "end_day": 100, "description": "3本仕立てに整枝。一番果は小さめで収穫し株の充実を優先", "tasks": ["3本仕立て整枝", "脇芽管理", "追肥（2週間おき）", "水やり（たっぷり）", "一番果早採り"] },
+      { "name": "収穫期前半", "start_day": 100, "end_day": 130, "description": "ヘタのすぐ下が白〜紫に色づいたら収穫適期。切り戻し更新剪定も検討", "tasks": ["収穫", "追肥", "水やり", "更新剪定（7月下旬〜8月初旬）"] },
+      { "name": "収穫期後半（秋なす）", "start_day": 130, "end_day": 160, "description": "更新剪定後30日で秋なす収穫開始。秋なすは皮が柔らかく美味", "tasks": ["収穫", "追肥", "水やり", "病害虫防除"] }
+    ]
+  },
+  {
+    "id": "bell_pepper",
+    "name": "ピーマン",
+    "category": "果菜類",
+    "growing_days": 150,
+    "min_temp": 12,
+    "max_temp": 35,
+    "frost_sensitive": 1,
+    "water_needs": "medium",
+    "planting_season": { "start_month": 4, "end_month": 5 },
+    "harvest_season": { "start_month": 6, "end_month": 10 },
+    "stages": [
+      { "name": "種まき・育苗", "start_day": 0, "end_day": 40, "description": "発芽適温25〜30℃。発芽に7〜10日かかる。保温をしっかり", "tasks": ["播種", "保温管理", "水やり", "ポット上げ"] },
+      { "name": "定植", "start_day": 40, "end_day": 55, "description": "本葉8〜10枚・一番花開花頃に定植。株間45cm", "tasks": ["畝立て・マルチ", "元肥投入", "定植", "支柱立て", "水やり"] },
+      { "name": "生育期", "start_day": 55, "end_day": 90, "description": "2〜3本仕立てに整枝。一番果は早採りして株の充実を図る", "tasks": ["整枝", "一番果早採り", "追肥（2週間おき）", "水やり", "脇芽管理"] },
+      { "name": "着果・収穫前期", "start_day": 90, "end_day": 120, "description": "次々と着果する。実が6〜7cmになったら収穫。採り遅れると株疲れ", "tasks": ["収穫", "追肥", "水やり", "病害虫チェック"] },
+      { "name": "収穫後期", "start_day": 120, "end_day": 150, "description": "秋まで長期収穫。10月頃まで採れる。赤く完熟させても美味", "tasks": ["収穫", "追肥継続", "水やり", "枯葉除去"] }
+    ]
+  },
+  {
+    "id": "okra",
+    "name": "オクラ",
+    "category": "果菜類",
+    "growing_days": 120,
+    "min_temp": 15,
+    "max_temp": 40,
+    "frost_sensitive": 1,
+    "water_needs": "medium",
+    "planting_season": { "start_month": 5, "end_month": 6 },
+    "harvest_season": { "start_month": 7, "end_month": 10 },
+    "stages": [
+      { "name": "種まき", "start_day": 0, "end_day": 20, "description": "種皮が硬いので一晩水に浸けてから播種。地温20℃以上で直播き可", "tasks": ["種の吸水処理", "播種（3〜4粒）", "保温", "水やり", "間引き"] },
+      { "name": "生育初期", "start_day": 20, "end_day": 50, "description": "初期生育がゆっくり。雑草に負けやすいので除草をこまめに", "tasks": ["間引き（1〜2本立て）", "除草", "水やり", "追肥開始"] },
+      { "name": "生育旺盛期", "start_day": 50, "end_day": 80, "description": "気温上昇とともに急成長。下葉は順次かき取る", "tasks": ["下葉かき", "追肥（2週間おき）", "水やり", "支柱立て（必要に応じて）"] },
+      { "name": "開花・収穫期", "start_day": 80, "end_day": 120, "description": "開花後4〜5日、7cm程度で収穫。採り遅れると硬くなる", "tasks": ["毎日収穫チェック", "下葉かき", "追肥", "水やり"] }
+    ]
+  },
+  {
+    "id": "edamame",
+    "name": "枝豆",
+    "category": "豆類",
+    "growing_days": 90,
+    "min_temp": 10,
+    "max_temp": 35,
+    "frost_sensitive": 1,
+    "water_needs": "medium",
+    "planting_season": { "start_month": 4, "end_month": 7 },
+    "harvest_season": { "start_month": 7, "end_month": 10 },
+    "stages": [
+      { "name": "種まき", "start_day": 0, "end_day": 14, "description": "直播き推奨。深さ2cm、1穴3粒。鳥害防止に不織布被覆", "tasks": ["播種", "鳥害対策（不織布）", "水やり"] },
+      { "name": "生育初期", "start_day": 14, "end_day": 35, "description": "本葉展開後に間引き。根粒菌が働くため窒素肥料は控えめ", "tasks": ["間引き（2本立て）", "除草", "土寄せ", "水やり"] },
+      { "name": "生育中期", "start_day": 35, "end_day": 60, "description": "開花期は水を切らさない。開花期の乾燥は莢つきに直結", "tasks": ["水やり（特に開花期）", "追肥（リン酸・カリ）", "土寄せ", "病害虫チェック"] },
+      { "name": "収穫期", "start_day": 60, "end_day": 90, "description": "莢がふっくら膨らみ、押すと豆が飛び出す頃が適期。株ごと引き抜く", "tasks": ["収穫（株ごと）", "適期見極め（黄変前に）"] }
+    ]
+  },
+  {
+    "id": "corn",
+    "name": "とうもろこし",
+    "category": "穀物類",
+    "growing_days": 90,
+    "min_temp": 10,
+    "max_temp": 35,
+    "frost_sensitive": 1,
+    "water_needs": "medium",
+    "planting_season": { "start_month": 4, "end_month": 6 },
+    "harvest_season": { "start_month": 7, "end_month": 9 },
+    "stages": [
+      { "name": "種まき", "start_day": 0, "end_day": 14, "description": "直播き。深さ3cm、1穴3粒。地温15℃以上で発芽。2列以上で植えると受粉率UP", "tasks": ["播種", "水やり", "鳥害対策"] },
+      { "name": "生育初期", "start_day": 14, "end_day": 35, "description": "本葉4〜5枚で間引き1本立て。元肥をしっかり", "tasks": ["間引き", "除草", "土寄せ", "水やり"] },
+      { "name": "生育中期", "start_day": 35, "end_day": 60, "description": "草丈が急伸長。追肥と土寄せで倒伏防止。分げつは除去不要", "tasks": ["追肥", "土寄せ（2回目）", "水やり", "倒伏防止"] },
+      { "name": "受粉・登熟", "start_day": 60, "end_day": 75, "description": "雄穂の花粉が雌穂の絹糸に付着して受粉。人工授粉で歯抜け防止", "tasks": ["人工授粉", "ヤングコーン収穫（2番穂）", "アワノメイガ対策"] },
+      { "name": "収穫期", "start_day": 75, "end_day": 90, "description": "絹糸が出てから20〜25日後。先端の実が充実し押して弾力あれば適期", "tasks": ["収穫（朝採り）", "適期判断（絹糸褐変）"] }
+    ]
+  },
+  {
+    "id": "potato",
+    "name": "じゃがいも",
+    "category": "根菜類",
+    "growing_days": 100,
+    "min_temp": 5,
+    "max_temp": 30,
+    "frost_sensitive": 1,
+    "water_needs": "medium",
+    "planting_season": { "start_month": 2, "end_month": 3 },
+    "harvest_season": { "start_month": 6, "end_month": 7 },
+    "stages": [
+      { "name": "種いも準備・植え付け", "start_day": 0, "end_day": 14, "description": "種いもは40〜60gにカット、切り口を乾燥。深さ10cm・株間30cm", "tasks": ["種いもカット・乾燥", "畝立て", "元肥投入", "植え付け"] },
+      { "name": "発芽・芽かき", "start_day": 14, "end_day": 35, "description": "植え付け後2〜3週で発芽。芽が10cmになったら2本に芽かき", "tasks": ["芽かき（2本残し）", "除草", "水やり（控えめ）"] },
+      { "name": "生育期", "start_day": 35, "end_day": 60, "description": "追肥と土寄せで芋の緑化防止。土寄せは2回行う", "tasks": ["追肥", "土寄せ（1回目）", "土寄せ（2回目）", "除草"] },
+      { "name": "開花・肥大期", "start_day": 60, "end_day": 85, "description": "花が咲く頃に地下で芋が肥大。水やりは控えめ。疫病注意", "tasks": ["病害虫チェック（疫病）", "水やり控えめ", "花摘み（任意）"] },
+      { "name": "収穫", "start_day": 85, "end_day": 100, "description": "茎葉が黄変・枯れ始めたら収穫。晴天の日に掘り上げ、日陰で乾燥", "tasks": ["試し掘り", "収穫（晴天日）", "乾燥・保存", "緑化芋除去"] }
+    ]
+  },
+  {
+    "id": "sweet_potato",
+    "name": "さつまいも",
+    "category": "根菜類",
+    "growing_days": 130,
+    "min_temp": 15,
+    "max_temp": 35,
+    "frost_sensitive": 1,
+    "water_needs": "low",
+    "planting_season": { "start_month": 5, "end_month": 6 },
+    "harvest_season": { "start_month": 9, "end_month": 11 },
+    "stages": [
+      { "name": "つる苗植え付け", "start_day": 0, "end_day": 14, "description": "つる苗を斜め挿しで植え付け。株間30cm。植え付け後はたっぷり水やり", "tasks": ["畝立て（高畝）", "マルチ張り", "つる苗植え付け", "水やり（活着まで）"] },
+      { "name": "活着・初期生育", "start_day": 14, "end_day": 40, "description": "活着後は水やり不要。つるが伸び始める", "tasks": ["活着確認", "除草", "補植（枯れた株）"] },
+      { "name": "つる伸長期", "start_day": 40, "end_day": 80, "description": "つるが旺盛に伸びる。つる返しで不定根からの芋肥大を防止", "tasks": ["つる返し（月1〜2回）", "除草"] },
+      { "name": "芋肥大期", "start_day": 80, "end_day": 120, "description": "地中で芋が肥大。追肥は不要（つるボケ防止）。水やりも不要", "tasks": ["つる返し", "病害虫チェック"] },
+      { "name": "収穫・貯蔵", "start_day": 120, "end_day": 130, "description": "初霜前に収穫。掘り上げ後は日陰で2〜3日乾燥。キュアリング推奨", "tasks": ["試し掘り", "収穫", "乾燥", "キュアリング（13℃で保存）"] }
+    ]
+  },
+  {
+    "id": "daikon",
+    "name": "大根",
+    "category": "根菜類",
+    "growing_days": 70,
+    "min_temp": 5,
+    "max_temp": 28,
+    "frost_sensitive": 0,
+    "water_needs": "medium",
+    "planting_season": { "start_month": 8, "end_month": 9 },
+    "harvest_season": { "start_month": 10, "end_month": 12 },
+    "stages": [
+      { "name": "種まき", "start_day": 0, "end_day": 7, "description": "直播き。深さ1cm、1穴5粒。株間30cm。深く耕した畝に", "tasks": ["深耕（30cm以上）", "元肥投入", "播種", "水やり"] },
+      { "name": "間引き・生育初期", "start_day": 7, "end_day": 25, "description": "本葉2枚で3本、5枚で1本に間引き。間引きは丁寧に", "tasks": ["間引き（2回）", "除草", "水やり", "害虫チェック（シンクイムシ）"] },
+      { "name": "葉の生育期", "start_day": 25, "end_day": 45, "description": "葉が旺盛に展開。この時期の養分が根の肥大に直結", "tasks": ["追肥", "土寄せ", "水やり", "除草"] },
+      { "name": "根の肥大期・収穫", "start_day": 45, "end_day": 70, "description": "地上部に根が見え始める。直径7〜8cmで収穫適期。ス入り前に", "tasks": ["収穫", "ス入りチェック", "必要に応じて土寄せ"] }
+    ]
+  },
+  {
+    "id": "carrot",
+    "name": "にんじん",
+    "category": "根菜類",
+    "growing_days": 110,
+    "min_temp": 5,
+    "max_temp": 28,
+    "frost_sensitive": 0,
+    "water_needs": "medium",
+    "planting_season": { "start_month": 7, "end_month": 8 },
+    "harvest_season": { "start_month": 10, "end_month": 12 },
+    "stages": [
+      { "name": "種まき", "start_day": 0, "end_day": 14, "description": "好光性種子のため覆土はごく薄く。発芽まで乾燥厳禁。すじまき", "tasks": ["播種（すじまき）", "薄く覆土", "たっぷり水やり", "乾燥防止（不織布被覆）"] },
+      { "name": "間引き1回目", "start_day": 14, "end_day": 30, "description": "本葉2〜3枚で3cm間隔に間引き。密生部を重点的に", "tasks": ["間引き", "除草", "水やり", "不織布除去"] },
+      { "name": "間引き2回目・生育中期", "start_day": 30, "end_day": 55, "description": "本葉5〜6枚で10〜12cm間隔に。追肥と土寄せ", "tasks": ["間引き（2回目）", "追肥", "土寄せ", "除草"] },
+      { "name": "根の肥大期", "start_day": 55, "end_day": 90, "description": "根が太り始める。肩が地上に出たら土寄せして緑化防止", "tasks": ["土寄せ", "水やり", "除草"] },
+      { "name": "収穫", "start_day": 90, "end_day": 110, "description": "根の直径4〜5cmで収穫適期。収穫遅れると裂根する", "tasks": ["収穫", "保存（土付きで冷暗所）"] }
+    ]
+  },
+  {
+    "id": "spinach",
+    "name": "ほうれん草",
+    "category": "葉菜類",
+    "growing_days": 45,
+    "min_temp": 0,
+    "max_temp": 25,
+    "frost_sensitive": 0,
+    "water_needs": "medium",
+    "planting_season": { "start_month": 9, "end_month": 11 },
+    "harvest_season": { "start_month": 10, "end_month": 2 },
+    "stages": [
+      { "name": "種まき", "start_day": 0, "end_day": 7, "description": "すじまき。一晩水に浸けると発芽率UP。酸性土壌に弱いので石灰必須", "tasks": ["苦土石灰投入（2週間前）", "播種", "覆土・鎮圧", "水やり"] },
+      { "name": "発芽・間引き", "start_day": 7, "end_day": 20, "description": "本葉1〜2枚で3cm間隔に間引き。徒長防止に日当たり確保", "tasks": ["間引き", "除草", "水やり"] },
+      { "name": "生育期", "start_day": 20, "end_day": 35, "description": "本葉4〜5枚で5〜6cm間隔に。追肥1回。べと病に注意", "tasks": ["間引き（2回目）", "追肥", "病害虫チェック", "水やり"] },
+      { "name": "収穫", "start_day": 35, "end_day": 45, "description": "草丈20〜25cmで収穫。株元からハサミで切り取りまたは株ごと引き抜き", "tasks": ["収穫", "とう立ちチェック"] }
+    ]
+  },
+  {
+    "id": "komatsuna",
+    "name": "小松菜",
+    "category": "葉菜類",
+    "growing_days": 35,
+    "min_temp": -3,
+    "max_temp": 30,
+    "frost_sensitive": 0,
+    "water_needs": "medium",
+    "planting_season": { "start_month": 3, "end_month": 11 },
+    "harvest_season": { "start_month": 4, "end_month": 12 },
+    "stages": [
+      { "name": "種まき", "start_day": 0, "end_day": 5, "description": "すじまきで直播き。周年栽培可能だが春・秋が作りやすい", "tasks": ["播種", "覆土・鎮圧", "水やり"] },
+      { "name": "間引き・生育", "start_day": 5, "end_day": 15, "description": "本葉1〜2枚で3cm間隔に間引き。害虫（コナガ、アオムシ）に注意", "tasks": ["間引き", "除草", "水やり", "防虫ネット設置"] },
+      { "name": "生育後期", "start_day": 15, "end_day": 25, "description": "本葉5枚頃に5cm間隔に最終間引き。追肥は1回", "tasks": ["間引き（最終）", "追肥", "水やり", "害虫チェック"] },
+      { "name": "収穫", "start_day": 25, "end_day": 35, "description": "草丈20〜25cmで収穫。株元から切り取り。とう立ち前に", "tasks": ["収穫", "とう立ちチェック"] }
+    ]
+  },
+  {
+    "id": "lettuce",
+    "name": "レタス",
+    "category": "葉菜類",
+    "growing_days": 70,
+    "min_temp": 5,
+    "max_temp": 25,
+    "frost_sensitive": 0,
+    "water_needs": "medium",
+    "planting_season": { "start_month": 8, "end_month": 9 },
+    "harvest_season": { "start_month": 10, "end_month": 11 },
+    "stages": [
+      { "name": "種まき・育苗", "start_day": 0, "end_day": 25, "description": "好光性種子。セルトレイに播種、覆土極薄。25℃以上で休眠するため涼しい場所で", "tasks": ["播種", "薄く覆土", "水やり（霧吹き）", "遮光管理"] },
+      { "name": "定植", "start_day": 25, "end_day": 35, "description": "本葉4〜5枚で定植。株間30cm。深植えしない（腐敗防止）", "tasks": ["畝立て", "元肥投入", "定植（浅植え）", "水やり"] },
+      { "name": "結球開始", "start_day": 35, "end_day": 55, "description": "外葉が充実してから結球開始。追肥は結球前まで", "tasks": ["追肥", "除草", "水やり", "病害虫チェック（軟腐病）"] },
+      { "name": "収穫", "start_day": 55, "end_day": 70, "description": "上から押してしっかり詰まった感触があれば収穫。朝採りが鮮度よい", "tasks": ["収穫", "とう立ちチェック"] }
+    ]
+  },
+  {
+    "id": "cabbage",
+    "name": "キャベツ",
+    "category": "葉菜類",
+    "growing_days": 90,
+    "min_temp": 0,
+    "max_temp": 25,
+    "frost_sensitive": 0,
+    "water_needs": "medium",
+    "planting_season": { "start_month": 7, "end_month": 8 },
+    "harvest_season": { "start_month": 10, "end_month": 12 },
+    "stages": [
+      { "name": "種まき・育苗", "start_day": 0, "end_day": 30, "description": "セルトレイ→ポットで育苗。本葉5〜6枚で定植サイズ", "tasks": ["播種", "水やり", "ポット上げ", "害虫防除"] },
+      { "name": "定植", "start_day": 30, "end_day": 40, "description": "株間40cm。防虫ネットトンネル推奨（アオムシ・コナガ対策）", "tasks": ["畝立て・元肥", "定植", "防虫ネット設置", "水やり"] },
+      { "name": "外葉展開期", "start_day": 40, "end_day": 60, "description": "大きな外葉を展開。この時期の生育が結球の大きさを決める", "tasks": ["追肥（2回）", "除草", "水やり", "害虫チェック"] },
+      { "name": "結球期", "start_day": 60, "end_day": 80, "description": "中心部が巻き始める。追肥は結球開始前まで", "tasks": ["水やり", "病害虫防除", "外葉保護"] },
+      { "name": "収穫", "start_day": 80, "end_day": 90, "description": "球を手で押してしっかり硬ければ収穫。包丁で株元から切り取り", "tasks": ["収穫", "裂球チェック"] }
+    ]
+  },
+  {
+    "id": "napa_cabbage",
+    "name": "白菜",
+    "category": "葉菜類",
+    "growing_days": 80,
+    "min_temp": 0,
+    "max_temp": 25,
+    "frost_sensitive": 0,
+    "water_needs": "medium",
+    "planting_season": { "start_month": 8, "end_month": 9 },
+    "harvest_season": { "start_month": 11, "end_month": 1 },
+    "stages": [
+      { "name": "種まき・育苗", "start_day": 0, "end_day": 25, "description": "セルトレイで育苗。直播きも可。秋まき専用品種を選ぶ", "tasks": ["播種", "水やり", "ポット上げ", "徒長防止"] },
+      { "name": "定植", "start_day": 25, "end_day": 35, "description": "本葉5〜6枚で定植。株間45cm。定植遅れは結球不良の原因", "tasks": ["畝立て・元肥", "定植", "防虫ネット", "水やり"] },
+      { "name": "外葉展開・追肥", "start_day": 35, "end_day": 55, "description": "外葉が大きく展開。結球前に十分な外葉を作ることが重要", "tasks": ["追肥（2回）", "除草", "土寄せ", "害虫防除（ヨトウムシ）"] },
+      { "name": "結球・収穫", "start_day": 55, "end_day": 80, "description": "頭部を手で押してしっかり詰まれば収穫。霜に当てると甘みが増す", "tasks": ["収穫", "霜対策（外葉で包む）", "保存（畑に置いたまま可）"] }
+    ]
+  },
+  {
+    "id": "broccoli",
+    "name": "ブロッコリー",
+    "category": "葉菜類",
+    "growing_days": 95,
+    "min_temp": 0,
+    "max_temp": 25,
+    "frost_sensitive": 0,
+    "water_needs": "medium",
+    "planting_season": { "start_month": 7, "end_month": 8 },
+    "harvest_season": { "start_month": 10, "end_month": 12 },
+    "stages": [
+      { "name": "種まき・育苗", "start_day": 0, "end_day": 30, "description": "セルトレイ→ポットで育苗。徒長させないよう日当たり確保", "tasks": ["播種", "水やり", "ポット上げ", "徒長防止管理"] },
+      { "name": "定植", "start_day": 30, "end_day": 40, "description": "本葉5〜6枚で定植。株間45cm。防虫ネット推奨", "tasks": ["畝立て・元肥", "定植", "防虫ネット設置", "水やり"] },
+      { "name": "生育期", "start_day": 40, "end_day": 65, "description": "大きな葉を展開。追肥2回。花蕾形成前に十分な株に育てる", "tasks": ["追肥（2回）", "除草", "土寄せ", "害虫チェック（アオムシ）"] },
+      { "name": "花蕾形成期", "start_day": 65, "end_day": 85, "description": "中心に花蕾が見え始める。肥料切れさせない", "tasks": ["追肥", "水やり", "病害虫防除"] },
+      { "name": "収穫", "start_day": 85, "end_day": 95, "description": "花蕾が10〜15cm、蕾が密な状態で収穫。側花蕾も順次収穫可", "tasks": ["頂花蕾収穫", "側花蕾収穫", "追肥（側花蕾用）"] }
+    ]
+  },
+  {
+    "id": "strawberry",
+    "name": "いちご",
+    "category": "果菜類",
+    "growing_days": 200,
+    "min_temp": -5,
+    "max_temp": 28,
+    "frost_sensitive": 0,
+    "water_needs": "medium",
+    "planting_season": { "start_month": 9, "end_month": 10 },
+    "harvest_season": { "start_month": 4, "end_month": 6 },
+    "stages": [
+      { "name": "苗の植え付け", "start_day": 0, "end_day": 14, "description": "ランナーの切り口を内側に向けて浅植え。クラウンを埋めない", "tasks": ["畝立て・マルチ", "元肥投入", "浅植え定植", "水やり"] },
+      { "name": "秋の生育期", "start_day": 14, "end_day": 60, "description": "活着後は新葉が展開。ランナーは除去。追肥1回", "tasks": ["ランナー除去", "枯葉除去", "追肥", "水やり"] },
+      { "name": "越冬期", "start_day": 60, "end_day": 150, "description": "休眠に入る。ワラや不織布でマルチ。寒さに当てることで花芽分化促進", "tasks": ["防寒マルチ（ワラ）", "枯葉除去", "水やり（控えめ）"] },
+      { "name": "春の生育・開花", "start_day": 150, "end_day": 180, "description": "気温上昇で生育再開。花が咲き始める。人工授粉で形の良い実に", "tasks": ["マルチ除去・敷き直し", "追肥", "人工授粉", "ランナー除去"] },
+      { "name": "収穫期", "start_day": 180, "end_day": 200, "description": "果実全体が赤く色づいたら収穫。朝の涼しい時間帯に", "tasks": ["収穫", "水やり", "灰色かび病対策", "ナメクジ対策"] }
+    ]
+  },
+  {
+    "id": "watermelon",
+    "name": "すいか",
+    "category": "果菜類",
+    "growing_days": 120,
+    "min_temp": 15,
+    "max_temp": 38,
+    "frost_sensitive": 1,
+    "water_needs": "medium",
+    "planting_season": { "start_month": 4, "end_month": 5 },
+    "harvest_season": { "start_month": 7, "end_month": 8 },
+    "stages": [
+      { "name": "種まき・育苗", "start_day": 0, "end_day": 30, "description": "ポットに播種、28〜30℃管理。接ぎ木苗が育てやすい", "tasks": ["播種", "保温管理", "水やり", "ポット上げ"] },
+      { "name": "定植", "start_day": 30, "end_day": 40, "description": "本葉4〜5枚で定植。株間100cm以上。敷きワラ準備", "tasks": ["畝立て・元肥", "定植", "ホットキャップ", "水やり"] },
+      { "name": "つる管理", "start_day": 40, "end_day": 70, "description": "親づる摘心し子づる3〜4本仕立て。敷きワラで果実保護", "tasks": ["親づる摘心", "子づる整理", "敷きワラ", "追肥"] },
+      { "name": "着果・肥大", "start_day": 70, "end_day": 100, "description": "2番花に人工授粉。1株2〜3果に制限。交配日を記録", "tasks": ["人工授粉", "交配日記録", "摘果", "玉直し（日焼け防止）"] },
+      { "name": "収穫", "start_day": 100, "end_day": 120, "description": "受粉後35〜40日で収穫。巻きひげの枯れ、叩いて鈍い音が目安", "tasks": ["収穫適期判断", "収穫", "ツル片付け"] }
+    ]
+  },
+  {
+    "id": "pumpkin",
+    "name": "かぼちゃ",
+    "category": "果菜類",
+    "growing_days": 110,
+    "min_temp": 10,
+    "max_temp": 35,
+    "frost_sensitive": 1,
+    "water_needs": "low",
+    "planting_season": { "start_month": 4, "end_month": 5 },
+    "harvest_season": { "start_month": 7, "end_month": 9 },
+    "stages": [
+      { "name": "種まき・育苗", "start_day": 0, "end_day": 25, "description": "ポットに播種。発芽適温25〜30℃。直播きも可（5月以降）", "tasks": ["播種", "保温管理", "水やり"] },
+      { "name": "定植", "start_day": 25, "end_day": 35, "description": "本葉4〜5枚で定植。株間80cm以上。広い場所が必要", "tasks": ["畝立て・元肥", "定植", "水やり", "敷きワラ準備"] },
+      { "name": "つる管理", "start_day": 35, "end_day": 60, "description": "親づる1本仕立てまたは子づる2〜3本。敷きワラで果実保護", "tasks": ["つる整理", "敷きワラ", "追肥（着果後）", "除草"] },
+      { "name": "着果・肥大期", "start_day": 60, "end_day": 90, "description": "人工授粉で確実に着果。1株2〜3果に制限。座布団で果実保護", "tasks": ["人工授粉", "摘果", "玉直し", "追肥"] },
+      { "name": "収穫・追熟", "start_day": 90, "end_day": 110, "description": "ヘタがコルク化し爪が立たなくなったら収穫。2〜3週間追熟で甘みUP", "tasks": ["収穫", "追熟（風通しの良い日陰）", "保存"] }
+    ]
+  },
+  {
+    "id": "green_onion",
+    "name": "ネギ",
+    "category": "葉菜類",
+    "growing_days": 150,
+    "min_temp": -5,
+    "max_temp": 30,
+    "frost_sensitive": 0,
+    "water_needs": "medium",
+    "planting_season": { "start_month": 3, "end_month": 4 },
+    "harvest_season": { "start_month": 11, "end_month": 2 },
+    "stages": [
+      { "name": "種まき・育苗", "start_day": 0, "end_day": 60, "description": "苗床にすじまき。鉛筆の太さまで育苗。育苗期間が長い", "tasks": ["播種", "水やり", "間引き", "除草"] },
+      { "name": "定植", "start_day": 60, "end_day": 75, "description": "溝を掘り、苗を5cm間隔で立てかけて植える。深さ15cm程度", "tasks": ["溝掘り", "定植", "ワラ敷き（溝底）", "水やり"] },
+      { "name": "土寄せ期（前半）", "start_day": 75, "end_day": 110, "description": "3〜4回に分けて土寄せ。一度に寄せすぎない。追肥と同時に", "tasks": ["土寄せ（月1回）", "追肥", "除草", "水やり"] },
+      { "name": "土寄せ期（後半）", "start_day": 110, "end_day": 140, "description": "最終土寄せ。白い部分を30cm以上にする。赤さび病に注意", "tasks": ["最終土寄せ", "追肥", "病害虫チェック"] },
+      { "name": "収穫", "start_day": 140, "end_day": 150, "description": "必要な分だけ抜き取り収穫。霜に当たると甘みが増す", "tasks": ["収穫", "保存"] }
+    ]
+  },
+  {
+    "id": "onion",
+    "name": "玉ねぎ",
+    "category": "根菜類",
+    "growing_days": 240,
+    "min_temp": -5,
+    "max_temp": 25,
+    "frost_sensitive": 0,
+    "water_needs": "medium",
+    "planting_season": { "start_month": 9, "end_month": 11 },
+    "harvest_season": { "start_month": 5, "end_month": 6 },
+    "stages": [
+      { "name": "種まき・育苗", "start_day": 0, "end_day": 55, "description": "9月に播種。鉛筆の太さ（直径6〜7mm）まで育苗", "tasks": ["播種", "水やり", "間引き", "除草"] },
+      { "name": "定植", "start_day": 55, "end_day": 65, "description": "11月上旬に定植。株間12cm・条間20cm。深植えしない", "tasks": ["畝立て・元肥", "定植（浅植え）", "水やり", "マルチ張り"] },
+      { "name": "越冬期", "start_day": 65, "end_day": 160, "description": "冬の間はゆっくり生育。霜柱で苗が持ち上がったら踏み直す", "tasks": ["霜柱踏み", "追肥（12月・2月）", "除草", "べと病チェック"] },
+      { "name": "肥大期", "start_day": 160, "end_day": 220, "description": "春に急速に肥大。3月以降の追肥は貯蔵性低下するので禁止", "tasks": ["水やり", "除草", "病害虫防除（べと病）", "止め肥確認"] },
+      { "name": "収穫・乾燥", "start_day": 220, "end_day": 240, "description": "葉が8割倒伏したら収穫。晴天日に抜いて2〜3日畑で乾燥", "tasks": ["収穫（晴天日）", "畑乾燥", "吊り保存", "根・葉切り"] }
+    ]
+  },
+  {
+    "id": "garlic",
+    "name": "にんにく",
+    "category": "根菜類",
+    "growing_days": 240,
+    "min_temp": -10,
+    "max_temp": 25,
+    "frost_sensitive": 0,
+    "water_needs": "low",
+    "planting_season": { "start_month": 9, "end_month": 10 },
+    "harvest_season": { "start_month": 5, "end_month": 6 },
+    "stages": [
+      { "name": "植え付け", "start_day": 0, "end_day": 14, "description": "りん片を1片ずつ、尖った方を上にして深さ5cmに。株間15cm", "tasks": ["畝立て・元肥", "りん片の選別", "植え付け", "水やり"] },
+      { "name": "秋の生育期", "start_day": 14, "end_day": 60, "description": "発芽後は葉が3〜4枚展開。マルチで地温確保", "tasks": ["マルチ張り", "除草", "追肥（11月）", "水やり"] },
+      { "name": "越冬期", "start_day": 60, "end_day": 150, "description": "生育が止まるが根は伸長中。乾燥しすぎない程度に管理", "tasks": ["水やり（控えめ）", "霜柱踏み", "追肥（2月）"] },
+      { "name": "春の生育期", "start_day": 150, "end_day": 210, "description": "気温上昇で生育再開。花芽（とう）が出たら摘み取る", "tasks": ["とう摘み", "追肥（3月）", "水やり", "さび病チェック"] },
+      { "name": "収穫", "start_day": 210, "end_day": 240, "description": "下葉が3〜4枚枯れたら収穫。掘り上げて1週間乾燥", "tasks": ["収穫", "乾燥（風通しの良い日陰）", "根・茎切り", "保存"] }
+    ]
+  },
+  {
+    "id": "ginger",
+    "name": "しょうが",
+    "category": "根菜類",
+    "growing_days": 180,
+    "min_temp": 15,
+    "max_temp": 35,
+    "frost_sensitive": 1,
+    "water_needs": "high",
+    "planting_season": { "start_month": 4, "end_month": 5 },
+    "harvest_season": { "start_month": 10, "end_month": 11 },
+    "stages": [
+      { "name": "種しょうが植え付け", "start_day": 0, "end_day": 30, "description": "50〜80gにカットし、芽を上にして深さ8cm。株間25cm。半日陰がベスト", "tasks": ["種しょうがカット", "畝立て・元肥", "植え付け", "水やり"] },
+      { "name": "発芽・初期生育", "start_day": 30, "end_day": 60, "description": "発芽まで3〜4週。乾燥防止にワラマルチ必須。半日陰を好む", "tasks": ["ワラマルチ", "水やり（毎日）", "除草", "遮光（必要時）"] },
+      { "name": "生育中期", "start_day": 60, "end_day": 110, "description": "茎葉が旺盛に展開。追肥と土寄せで根茎肥大促進", "tasks": ["追肥（月1回）", "土寄せ", "水やり（たっぷり）", "除草"] },
+      { "name": "根茎肥大期", "start_day": 110, "end_day": 160, "description": "新しょうがとして早採りも可（7月〜）。根茎が充実していく", "tasks": ["水やり継続", "追肥", "土寄せ", "新しょうが収穫（任意）"] },
+      { "name": "収穫", "start_day": 160, "end_day": 180, "description": "茎葉が黄変し始めたら収穫。霜に当てない。13℃以上で保存", "tasks": ["収穫", "乾燥（半日）", "保存（新聞紙で包み常温）"] }
+    ]
+  },
+  {
+    "id": "basil",
+    "name": "バジル",
+    "category": "ハーブ類",
+    "growing_days": 70,
+    "min_temp": 10,
+    "max_temp": 35,
+    "frost_sensitive": 1,
+    "water_needs": "medium",
+    "planting_season": { "start_month": 4, "end_month": 6 },
+    "harvest_season": { "start_month": 6, "end_month": 10 },
+    "stages": [
+      { "name": "種まき", "start_day": 0, "end_day": 14, "description": "好光性種子。覆土はごく薄く。20℃以上で発芽。ポットまたは直播き", "tasks": ["播種", "薄く覆土", "水やり（霧吹き）", "保温"] },
+      { "name": "生育初期", "start_day": 14, "end_day": 30, "description": "本葉4〜6枚で定植または間引き。株間20cm", "tasks": ["間引きまたは定植", "水やり", "除草"] },
+      { "name": "生育・摘心", "start_day": 30, "end_day": 50, "description": "草丈20cmで摘心し脇芽を伸ばす。摘心で収量大幅UP", "tasks": ["摘心", "追肥", "水やり", "害虫チェック（ヨトウムシ）"] },
+      { "name": "収穫期", "start_day": 50, "end_day": 70, "description": "随時葉を収穫。花穂が出たら摘み取る（葉の風味低下防止）", "tasks": ["葉の収穫", "花穂摘み", "水やり", "追肥（月1回）"] }
+    ]
+  },
+  {
+    "id": "parsley",
+    "name": "パセリ",
+    "category": "ハーブ類",
+    "growing_days": 80,
+    "min_temp": 5,
+    "max_temp": 28,
+    "frost_sensitive": 0,
+    "water_needs": "medium",
+    "planting_season": { "start_month": 3, "end_month": 5 },
+    "harvest_season": { "start_month": 6, "end_month": 11 },
+    "stages": [
+      { "name": "種まき", "start_day": 0, "end_day": 21, "description": "発芽に2〜3週かかる。一晩水に浸けてから播種。好光性種子", "tasks": ["種の吸水処理", "播種", "薄く覆土", "水やり（乾燥防止）"] },
+      { "name": "生育初期", "start_day": 21, "end_day": 40, "description": "間引きして株間10〜15cm。生育はゆっくり", "tasks": ["間引き", "除草", "水やり", "遮光（真夏）"] },
+      { "name": "生育中期", "start_day": 40, "end_day": 60, "description": "葉が茂り始める。外葉から順に収穫開始可", "tasks": ["追肥", "水やり", "除草", "病害虫チェック"] },
+      { "name": "収穫期", "start_day": 60, "end_day": 80, "description": "外葉から必要な分だけ収穫。株の中心を残せば長期収穫可", "tasks": ["外葉から収穫", "追肥（月1回）", "水やり", "とう立ちチェック"] }
+    ]
+  },
+  {
+    "id": "shiso",
+    "name": "しそ",
+    "category": "ハーブ類",
+    "growing_days": 80,
+    "min_temp": 10,
+    "max_temp": 35,
+    "frost_sensitive": 1,
+    "water_needs": "medium",
+    "planting_season": { "start_month": 4, "end_month": 6 },
+    "harvest_season": { "start_month": 6, "end_month": 10 },
+    "stages": [
+      { "name": "種まき", "start_day": 0, "end_day": 14, "description": "好光性種子。覆土極薄。20℃以上で発芽。前年のこぼれ種でも生える", "tasks": ["播種", "薄く覆土", "水やり", "保温"] },
+      { "name": "生育初期", "start_day": 14, "end_day": 35, "description": "間引きして株間20〜30cm。半日陰でも育つ", "tasks": ["間引き", "除草", "水やり"] },
+      { "name": "生育・摘心", "start_day": 35, "end_day": 55, "description": "草丈30cmで摘心。脇芽を伸ばして収量UP", "tasks": ["摘心", "追肥", "水やり", "害虫チェック（バッタ）"] },
+      { "name": "収穫期", "start_day": 55, "end_day": 80, "description": "随時葉を収穫。穂じそ・花穂も食用に。秋に種を採取可能", "tasks": ["葉の収穫", "花穂摘み（または収穫）", "水やり", "種採り（秋）"] }
+    ]
+  },
+  {
+    "id": "bitter_melon",
+    "name": "ゴーヤ",
+    "category": "果菜類",
+    "growing_days": 110,
+    "min_temp": 15,
+    "max_temp": 38,
+    "frost_sensitive": 1,
+    "water_needs": "medium",
+    "planting_season": { "start_month": 4, "end_month": 5 },
+    "harvest_season": { "start_month": 7, "end_month": 10 },
+    "stages": [
+      { "name": "種まき・育苗", "start_day": 0, "end_day": 25, "description": "種の先端をカットし一晩水浸け。25〜30℃で発芽。直播きも可（5月〜）", "tasks": ["種の処理（先端カット・吸水）", "播種", "保温管理", "水やり"] },
+      { "name": "定植", "start_day": 25, "end_day": 35, "description": "本葉3〜4枚で定植。株間60cm。ネット設置必須", "tasks": ["畝立て・元肥", "定植", "ネット設置", "水やり"] },
+      { "name": "つる伸長期", "start_day": 35, "end_day": 60, "description": "親づる5〜6節で摘心し子づるを伸ばす。ネットに誘引", "tasks": ["親づる摘心", "つる誘引", "追肥開始", "水やり"] },
+      { "name": "開花・着果", "start_day": 60, "end_day": 85, "description": "雌花が咲き始める。朝の涼しい時間に人工授粉するとよい", "tasks": ["人工授粉", "追肥（2週間おき）", "水やり", "下葉かき"] },
+      { "name": "収穫期", "start_day": 85, "end_day": 110, "description": "開花後15〜20日、イボが大きく緑色のうちに収穫。黄変前に", "tasks": ["収穫", "追肥継続", "水やり", "完熟果の除去"] }
+    ]
+  },
+  {
+    "id": "zucchini",
+    "name": "ズッキーニ",
+    "category": "果菜類",
+    "growing_days": 80,
+    "min_temp": 10,
+    "max_temp": 35,
+    "frost_sensitive": 1,
+    "water_needs": "medium",
+    "planting_season": { "start_month": 4, "end_month": 5 },
+    "harvest_season": { "start_month": 6, "end_month": 9 },
+    "stages": [
+      { "name": "種まき・育苗", "start_day": 0, "end_day": 20, "description": "ポットに播種。発芽適温25〜30℃。直播きも可（5月以降）", "tasks": ["播種", "保温管理", "水やり"] },
+      { "name": "定植", "start_day": 20, "end_day": 30, "description": "本葉3〜4枚で定植。株間80cm。つるなしだが大株になる", "tasks": ["畝立て・元肥", "定植", "水やり", "マルチ張り"] },
+      { "name": "生育・開花", "start_day": 30, "end_day": 50, "description": "雄花が先に咲き、後から雌花。人工授粉が確実", "tasks": ["人工授粉（朝9時まで）", "追肥", "水やり", "下葉かき"] },
+      { "name": "収穫期", "start_day": 50, "end_day": 80, "description": "開花後4〜5日、長さ20cm程度で若採り。採り遅れると株疲れ", "tasks": ["毎日収穫チェック", "追肥（2週間おき）", "水やり", "病害虫防除（うどんこ病）"] }
+    ]
+  }
+]

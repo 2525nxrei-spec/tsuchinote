@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- 丸い緑のバッジ -->
+  <circle cx="256" cy="256" r="240" fill="#2d6a4f"/>
+  <!-- 白い葉っぱの芽 -->
+  <g transform="translate(256,270)" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+    <!-- 茎 -->
+    <path d="M0,85 C0,26 0,-14 0,-14"/>
+    <!-- 左の葉 -->
+    <path d="M0,20 C-22,-6 -80,-28 -90,-48 C-74,-26 -36,0 0,20Z" fill="#fff" stroke="none"/>
+    <!-- 右の葉（大きめ） -->
+    <path d="M0,-14 C26,-48 90,-80 106,-112 C80,-74 32,-26 0,-14Z" fill="#fff" stroke="none"/>
+    <!-- 葉脈（左） -->
+    <path d="M0,20 C-32,-10 -64,-26 -80,-42" stroke="#2d6a4f" stroke-width="5"/>
+    <!-- 葉脈（右） -->
+    <path d="M0,-14 C36,-48 70,-74 90,-100" stroke="#2d6a4f" stroke-width="5"/>
+    <!-- 土の粒 -->
+    <circle cx="-38" cy="102" r="14" fill="#fff" stroke="none"/>
+    <circle cx="0" cy="112" r="16" fill="#fff" stroke="none"/>
+    <circle cx="42" cy="102" r="14" fill="#fff" stroke="none"/>
+    <circle cx="-16" cy="92" r="10" fill="#fff" stroke="none"/>
+    <circle cx="22" cy="94" r="11" fill="#fff" stroke="none"/>
+  </g>
+</svg>
