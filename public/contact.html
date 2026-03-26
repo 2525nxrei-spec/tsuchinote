@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>お問い合わせ | ツチノート</title>
+  <meta name="description" content="ツチノートへのお問い合わせページです。ご質問・ご要望・不具合のご報告など、お気軽にご連絡ください。">
+  <link rel="canonical" href="https://tsuchinote.com/contact.html">
   <link rel="icon" type="image/svg+xml" sizes="192x192" href="/icons/icon-192.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -90,6 +92,21 @@
       color: #6b7c72;
       text-align: center;
     }
+    .footer-links {
+      margin-top: 8px;
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .footer-links a {
+      color: #6b7c72;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover {
+      color: #1b4332;
+    }
   </style>
 </head>
 <body>
@@ -116,6 +133,11 @@
 
     <footer>
       <p>&copy; 2026 濱田礼</p>
+      <div class="footer-links">
+        <a href="terms.html">利用規約</a>
+        <a href="privacy.html">プライバシーポリシー</a>
+        <a href="legal.html">特定商取引法に基づく表記</a>
+      </div>
     </footer>
   </div>
 </body>
