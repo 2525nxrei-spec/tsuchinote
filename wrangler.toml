@@ -16,7 +16,7 @@ directory = "./public"
 [[d1_databases]]
 binding = "DB"
 database_name = "tsuchinote-db"
-database_id = ""  # wrangler d1 create 後にIDを記入
+database_id = "8bcb8802-3b89-4fb5-b1d9-92a1ad1aa51b"
 
 # R2オブジェクトストレージ バインディング（画像等）
 [[r2_buckets]]
