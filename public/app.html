@@ -88,8 +88,8 @@
   <!-- トースト通知コンテナ -->
   <div id="toast-container" class="toast-container" role="status" aria-live="polite" aria-atomic="true"></div>
 
-  <!-- Stripe.js（Embedded Checkout用） -->
-  <script src="https://js.stripe.com/v3/" defer></script>
+  <!-- Stripe.js（Embedded Checkout用 — deferなしで確実に先に読み込む） -->
+  <script src="https://js.stripe.com/v3/"></script>
 
   <!-- スクリプト読み込み -->
   <script src="/js/api.js"></script>
