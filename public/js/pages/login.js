@@ -39,8 +39,15 @@ var LoginPage = (function() {
               '<input class="form-input" type="email" id="reg-email" placeholder="example@mail.com" required autocomplete="email" aria-required="true">' +
             '</div>' +
             '<div class="form-group">' +
-              '<label class="form-label" for="reg-password">パスワード（6文字以上）</label>' +
-              '<input class="form-input" type="password" id="reg-password" placeholder="パスワードを入力" required autocomplete="new-password" minlength="6" aria-required="true">' +
+              '<label class="form-label" for="reg-password">パスワード（8文字以上・英数字混在）</label>' +
+              '<input class="form-input" type="password" id="reg-password" placeholder="パスワードを入力" required autocomplete="new-password" minlength="8" aria-required="true">' +
+              '<div style="font-size:0.75rem;color:#6b7280;margin-top:4px;" id="reg-pw-strength"></div>' +
+            '</div>' +
+            '<div class="form-group" style="margin-top:12px;">' +
+              '<label style="display:flex;align-items:flex-start;gap:8px;font-size:0.82rem;cursor:pointer;">' +
+                '<input type="checkbox" id="reg-terms" style="margin-top:3px;flex-shrink:0;" required>' +
+                '<span><a href="terms.html" target="_blank" style="color:#1b4332;text-decoration:underline;">利用規約</a>と<a href="privacy.html" target="_blank" style="color:#1b4332;text-decoration:underline;">プライバシーポリシー</a>に同意する</span>' +
+              '</label>' +
             '</div>' +
             '<button type="submit" class="btn btn-primary btn-block">アカウント作成</button>' +
           '</form>' +
@@ -128,10 +135,21 @@ var LoginPage = (function() {
         document.getElementById('reg-email').focus();
         return Promise.reject();
       }
-      if (!password || password.length < 6) {
-        App.toast('パスワードは6文字以上で入力してください。', 'error');
+      if (!password || password.length < 8) {
+        App.toast('パスワードは8文字以上で入力してください。', 'error');
         document.getElementById('reg-password').classList.add('form-error');
         document.getElementById('reg-password').focus();
+        return Promise.reject();
+      }
+      if (!/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) {
+        App.toast('パスワードは英字と数字の両方を含めてください。', 'error');
+        document.getElementById('reg-password').classList.add('form-error');
+        document.getElementById('reg-password').focus();
+        return Promise.reject();
+      }
+      var termsCheck = document.getElementById('reg-terms');
+      if (termsCheck && !termsCheck.checked) {
+        App.toast('利用規約への同意が必要です。', 'error');
         return Promise.reject();
       }
 
@@ -139,6 +157,7 @@ var LoginPage = (function() {
         .then(function(res) {
           localStorage.setItem('tsuchi_token', res.data.token);
           localStorage.setItem('tsuchi_user', JSON.stringify(res.data.user));
+          localStorage.setItem('tsuchi_welcome', '1');
           App.toast('アカウントを作成しました！');
           window.location.hash = '#/home';
         })
@@ -155,6 +174,28 @@ var LoginPage = (function() {
         this.classList.remove('form-error');
       });
     });
+
+    // 登録パスワード強度チェック（リアルタイム）
+    var regPwInput = document.getElementById('reg-password');
+    if (regPwInput) {
+      regPwInput.addEventListener('input', function() {
+        var pw = this.value;
+        var el = document.getElementById('reg-pw-strength');
+        if (!el) return;
+        if (pw.length === 0) {
+          el.textContent = '';
+        } else if (pw.length < 8) {
+          el.textContent = 'あと' + (8 - pw.length) + '文字必要です';
+          el.style.color = '#dc2626';
+        } else if (!/[a-zA-Z]/.test(pw) || !/[0-9]/.test(pw)) {
+          el.textContent = '英字と数字の両方を含めてください';
+          el.style.color = '#d97706';
+        } else {
+          el.textContent = 'OK';
+          el.style.color = '#16a34a';
+        }
+      });
+    }
   }
 
   return {

@@ -189,6 +189,34 @@ var App = (function() {
       loading.classList.add('hidden');
       setTimeout(function() { loading.style.display = 'none'; }, 300);
     }
+
+    // ウェルカムメッセージ（新規登録直後に1回だけ表示）
+    if (localStorage.getItem('tsuchi_welcome') === '1') {
+      localStorage.removeItem('tsuchi_welcome');
+      setTimeout(function() {
+        toast('ようこそツチノートへ！\n畑を登録して、家庭菜園を始めましょう。');
+      }, 500);
+    }
+
+    // セッションタイムアウト（24時間操作なしでログアウト）
+    var SESSION_TIMEOUT = 24 * 60 * 60 * 1000;
+    function resetSessionTimer() {
+      localStorage.setItem('tsuchi_last_activity', Date.now().toString());
+    }
+    function checkSessionTimeout() {
+      var lastActivity = parseInt(localStorage.getItem('tsuchi_last_activity') || '0', 10);
+      if (lastActivity && Date.now() - lastActivity > SESSION_TIMEOUT && localStorage.getItem('tsuchi_token')) {
+        localStorage.removeItem('tsuchi_token');
+        localStorage.removeItem('tsuchi_user');
+        toast('長時間操作がなかったため、セキュリティのためログアウトしました。', 'warning');
+        window.location.hash = '#/login';
+      }
+    }
+    checkSessionTimeout();
+    resetSessionTimer();
+    ['click', 'keydown', 'scroll', 'touchstart'].forEach(function(evt) {
+      document.addEventListener(evt, resetSessionTimer, { passive: true });
+    });
   }
 
   // DOM読み込み完了後に初期化

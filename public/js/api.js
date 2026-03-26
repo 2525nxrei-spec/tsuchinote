@@ -110,6 +110,14 @@ var TsuchiAPI = (function() {
     /** プロフィール更新 */
     updateProfile: function(data) {
       return request('PUT', '/auth/profile', data);
+    },
+    /** パスワード変更 */
+    changePassword: function(currentPassword, newPassword) {
+      return request('PUT', '/auth/password', { current_password: currentPassword, new_password: newPassword });
+    },
+    /** アカウント削除 */
+    deleteAccount: function(password) {
+      return request('DELETE', '/auth/account', { password: password });
     }
   };
 
