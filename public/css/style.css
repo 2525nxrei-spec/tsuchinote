@@ -1187,6 +1187,158 @@ textarea.form-input {
   line-height: 1.5;
 }
 
+/* --- UX改善: ボタンフィードバック --- */
+.btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ボタン内スピナー */
+.btn-loading {
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+.btn-loading .btn-text {
+  visibility: hidden;
+}
+
+.btn-loading::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255,255,255,0.3);
+  border-top-color: var(--white);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+/* 成功チェックマーク */
+.btn-success {
+  pointer-events: none;
+}
+
+.btn-success .btn-text {
+  visibility: hidden;
+}
+
+.btn-success::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 8px;
+  border-left: 3px solid var(--white);
+  border-bottom: 3px solid var(--white);
+  transform: rotate(-45deg);
+  animation: checkPop 0.3s ease-out;
+}
+
+@keyframes checkPop {
+  0% { transform: rotate(-45deg) scale(0); }
+  60% { transform: rotate(-45deg) scale(1.2); }
+  100% { transform: rotate(-45deg) scale(1); }
+}
+
+/* リップルエフェクト */
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 10%, transparent 10%);
+  background-position: center;
+  background-size: 0% 0%;
+  transition: background-size 0.4s ease;
+  pointer-events: none;
+}
+
+.btn:active::before {
+  background-size: 300% 300%;
+  transition: background-size 0s;
+}
+
+/* --- アクセシビリティ: フォーカス可視化 --- */
+:focus-visible {
+  outline: 3px solid var(--green-mid);
+  outline-offset: 2px;
+}
+
+.btn:focus-visible {
+  outline: 3px solid var(--green-mid);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(45, 106, 79, 0.2);
+}
+
+.form-input:focus-visible {
+  outline: none;
+  border-color: var(--green-mid);
+  box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.15);
+}
+
+/* スキップナビゲーション */
+.skip-nav {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 99999;
+  background: var(--green-dark);
+  color: var(--white);
+  padding: 12px 24px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 0 0 var(--radius-sm) 0;
+  text-decoration: none;
+}
+
+.skip-nav:focus {
+  left: 0;
+}
+
+/* --- エラーメッセージUI --- */
+.error-banner {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-left: 4px solid var(--danger);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+  color: #991b1b;
+  line-height: 1.6;
+}
+
+.error-banner-title {
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.error-banner-help {
+  font-size: 0.85rem;
+  color: #b91c1c;
+}
+
+/* フォームバリデーションエラー */
+.form-input.form-error {
+  border-color: var(--danger);
+  background: #fef2f2;
+}
+
+.form-error-text {
+  font-size: 0.8rem;
+  color: var(--danger);
+  margin-top: 4px;
+}
+
 /* --- 印刷時 --- */
 @media print {
   .bottom-nav,
