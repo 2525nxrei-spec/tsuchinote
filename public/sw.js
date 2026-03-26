@@ -1,19 +1,22 @@
 // ツチノート Service Worker
 // キャッシュバージョン（更新時にインクリメント）
-var CACHE_VERSION = 'tsuchinote-v3';
+var CACHE_VERSION = 'tsuchinote-v5';
 
 // 静的アセット（キャッシュファースト）
 var STATIC_ASSETS = [
   '/',
   '/index.html',
+  '/app.html',
   '/css/style.css',
   '/js/app.js',
   '/js/api.js',
+  '/js/pages/landing.js',
   '/js/pages/login.js',
   '/js/pages/home.js',
   '/js/pages/farm.js',
   '/js/pages/record.js',
   '/js/pages/settings.js',
+  '/js/pages/camera.js',
   '/manifest.json',
   '/icons/icon-192.svg',
   '/icons/icon-512.svg'
@@ -83,12 +86,31 @@ self.addEventListener('fetch', function(event) {
     return;
   }
 
-  // 静的アセット → キャッシュファースト（なければネットワーク）
+  // HTML → ネットワークファースト（常に最新を取得、オフライン時だけキャッシュ）
+  var accept = event.request.headers.get('accept') || '';
+  if (accept.indexOf('text/html') !== -1) {
+    event.respondWith(
+      fetch(event.request).then(function(response) {
+        if (response.ok) {
+          var responseClone = response.clone();
+          caches.open(CACHE_VERSION).then(function(cache) {
+            cache.put(event.request, responseClone);
+          });
+        }
+        return response;
+      }).catch(function() {
+        return caches.match(event.request).then(function(cached) {
+          return cached || caches.match('/index.html');
+        });
+      })
+    );
+    return;
+  }
+
+  // JS/CSS等 → stale-while-revalidate（キャッシュ返しつつ裏で更新）
   event.respondWith(
     caches.match(event.request).then(function(cached) {
-      if (cached) return cached;
-      return fetch(event.request).then(function(response) {
-        // 取得できたらキャッシュに追加
+      var fetchPromise = fetch(event.request).then(function(response) {
         if (response.ok) {
           var responseClone = response.clone();
           caches.open(CACHE_VERSION).then(function(cache) {
@@ -97,11 +119,9 @@ self.addEventListener('fetch', function(event) {
         }
         return response;
       });
+      return cached || fetchPromise;
     }).catch(function() {
-      // HTML要求でオフラインの場合はトップページを返す
-      if (event.request.headers.get('accept').indexOf('text/html') !== -1) {
-        return caches.match('/index.html');
-      }
+      return caches.match(event.request);
     })
   );
 });

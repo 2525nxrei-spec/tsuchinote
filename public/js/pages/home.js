@@ -164,12 +164,16 @@ var HomePage = (function() {
         '<div class="forecast-row">' + forecastHtml + '</div>' +
         '<!-- 今日の提案 -->' +
         '<div class="card">' +
-          '<div class="card-header">\uD83C\uDF31 今日やること</div>' +
+          '<div class="card-header">今日やること</div>' +
           '<div class="suggestion-list" id="suggestion-list">' + suggestHtml + '</div>' +
         '</div>' +
+        '<!-- 畑を撮影するボタン -->' +
+        '<a href="#/camera" class="btn btn-secondary btn-block mt-16">' +
+          '畑を撮影する' +
+        '</a>' +
         '<!-- 作業記録ボタン -->' +
         '<a href="#/record" class="btn btn-primary btn-block mt-16">' +
-          '\u270D\uFE0F 作業を記録する' +
+          '作業を記録する' +
         '</a>' +
       '</div>';
   }

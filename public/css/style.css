@@ -239,6 +239,11 @@ img {
   min-height: 36px;
 }
 
+.btn-lg {
+  padding: 14px 32px;
+  font-size: 1.05rem;
+}
+
 /* --- フォーム要素 --- */
 .form-group {
   margin-bottom: 16px;
@@ -426,7 +431,7 @@ textarea.form-input {
 
 /* 天気カード */
 .weather-card {
-  background: linear-gradient(135deg, var(--sky-blue) 0%, var(--green-light) 100%);
+  background: var(--green-mid);
   color: var(--white);
   border-radius: var(--radius);
   padding: 20px;
@@ -689,7 +694,7 @@ textarea.form-input {
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--green-light), var(--green-mid));
+  background: var(--green-mid);
   border-radius: 4px;
   transition: width 0.5s ease;
 }
@@ -1004,6 +1009,19 @@ textarea.form-input {
 .text-light { color: var(--text-light); }
 .mt-8 { margin-top: 8px; }
 .mt-16 { margin-top: 16px; }
+
+/* --- 位置情報ステータス --- */
+.location-status {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  margin-top: 4px;
+}
+.location-status--loading {
+  color: var(--primary);
+}
+.location-status--error {
+  color: var(--danger);
+}
 .mb-8 { margin-bottom: 8px; }
 .mb-16 { margin-bottom: 16px; }
 .gap-8 { gap: 8px; }
@@ -1242,8 +1260,201 @@ textarea.form-input {
   color: var(--green-mid);
 }
 
-/* ヒーロー */
+/* ヒーロー — 緑ベース、太陽＋土＋芽 */
 .lp-hero {
+  background: var(--green-bg);
+  overflow: hidden;
+  position: relative;
+  padding-bottom: 0;
+}
+
+/* 右上に太陽の光 */
+.lp-hero::before {
+  content: '';
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  width: 140px;
+  height: 140px;
+  width: 200px;
+  height: 200px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='30' fill='%23ff9800' opacity='0.45'/%3E%3Ccircle cx='100' cy='100' r='55' fill='%23ffb300' opacity='0.25'/%3E%3Ccircle cx='100' cy='100' r='80' fill='%23ffd54f' opacity='0.15'/%3E%3Ccircle cx='100' cy='100' r='100' fill='%23fff176' opacity='0.08'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+  pointer-events: none;
+}
+
+/* 下部：土の層 */
+.lp-hero::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 20px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 20' preserveAspectRatio='none'%3E%3Cpath d='M0 4 Q20 0 40 4 Q60 0 80 4 Q100 0 120 4 Q140 0 160 4 Q180 0 200 4 Q220 0 240 4 Q260 0 280 4 Q300 0 320 4 Q340 0 360 4 Q380 0 400 4 L400 20 L0 20Z' fill='%238b6f47' opacity='0.2'/%3E%3C/svg%3E");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+/* 芽が育つアニメーション */
+/* 芽→花・野菜アニメーション */
+.lp-sprouts {
+  position: absolute;
+  bottom: 14px;
+  left: 0;
+  right: 0;
+  height: 160px;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.lp-sprout__stem {
+  width: 4px;
+  background: #2d8a4e;
+  border-radius: 2px;
+  transform-origin: bottom;
+}
+
+.lp-sprout:nth-child(1) .lp-sprout__stem { height: 70px; }
+.lp-sprout:nth-child(2) .lp-sprout__stem { height: 55px; }
+.lp-sprout:nth-child(3) .lp-sprout__stem { height: 95px; }
+.lp-sprout:nth-child(4) .lp-sprout__stem { height: 80px; }
+.lp-sprout:nth-child(5) .lp-sprout__stem { height: 65px; }
+.lp-sprout:nth-child(6) .lp-sprout__stem { height: 40px; width: 3px; }
+
+/* 葉っぱ（デフォルト） */
+.lp-sprout__leaves {
+  display: flex;
+  gap: 0;
+  margin-bottom: -3px;
+}
+
+.lp-sprout__leaf {
+  width: 20px;
+  height: 30px;
+  background: #3da35d;
+  border-radius: 50% 50% 50% 0;
+  animation: leafOpen 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+.lp-sprout__leaf--r {
+  border-radius: 50% 50% 0 50%;
+  background: #4caf50;
+}
+
+/* 花・実（葉の上に出現） */
+.lp-sprout__fruit {
+  animation: fruitPop 0.5s ease-out forwards;
+  opacity: 0;
+  font-size: 1.4rem;
+  line-height: 1;
+  margin-bottom: -4px;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
+}
+
+/* 1: ひまわり */
+.lp-sprout:nth-child(1) .lp-sprout__leaf { animation-delay: 1.3s; width: 18px; height: 26px; }
+.lp-sprout:nth-child(1) .lp-sprout__fruit { animation-delay: 2.0s; font-size: 1.6rem; }
+
+/* 2: 小さい双葉のまま（まだ芽） */
+.lp-sprout:nth-child(2) .lp-sprout__leaf { animation-delay: 1.8s; width: 14px; height: 20px; }
+.lp-sprout:nth-child(2) .lp-sprout__fruit { display: none; }
+
+/* 3: トマト（一番大きい） */
+.lp-sprout:nth-child(3) .lp-sprout__leaf { animation-delay: 1.5s; width: 24px; height: 34px; }
+.lp-sprout:nth-child(3) .lp-sprout__fruit { animation-delay: 2.2s; font-size: 2rem; }
+
+/* 4: チューリップ */
+.lp-sprout:nth-child(4) .lp-sprout__leaf { animation-delay: 2.0s; width: 16px; height: 24px; }
+.lp-sprout:nth-child(4) .lp-sprout__fruit { animation-delay: 2.6s; font-size: 1.5rem; }
+
+/* 5: にんじん */
+.lp-sprout:nth-child(5) .lp-sprout__leaf { animation-delay: 1.6s; width: 20px; height: 28px; }
+.lp-sprout:nth-child(5) .lp-sprout__fruit { animation-delay: 2.4s; font-size: 1.4rem; }
+
+/* 6: 小さな芽（まだ育ち中） */
+.lp-sprout:nth-child(6) .lp-sprout__leaf { animation-delay: 2.2s; width: 10px; height: 16px; }
+.lp-sprout:nth-child(6) .lp-sprout__fruit { display: none; }
+
+@keyframes sproutGrow {
+  0%   { opacity: 0; transform: scaleY(0); }
+  30%  { opacity: 1; }
+  100% { opacity: 1; transform: scaleY(1); }
+}
+
+@keyframes leafOpen {
+  0%   { opacity: 0; transform: scale(0.3); }
+  60%  { transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fruitPop {
+  0%   { opacity: 0; transform: scale(0); }
+  50%  { transform: scale(1.3); }
+  70%  { transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* 風に揺れる（育ち終わってから適用） */
+@keyframes sway {
+  0%, 100% { transform: rotate(0deg); }
+  25%      { transform: rotate(2.5deg); }
+  75%      { transform: rotate(-2deg); }
+}
+
+@keyframes swaySlow {
+  0%, 100% { transform: rotate(0deg); }
+  30%      { transform: rotate(1.8deg); }
+  70%      { transform: rotate(-1.5deg); }
+}
+
+.lp-sprout {
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transform-origin: bottom center;
+  animation: sproutGrow 2s ease-out forwards,
+             sway 3s ease-in-out 3.5s infinite;
+}
+
+.lp-sprout:nth-child(1) { left: 6%; }
+.lp-sprout:nth-child(2) { left: 22%; }
+.lp-sprout:nth-child(3) { left: 42%; }
+.lp-sprout:nth-child(4) { left: 62%; }
+.lp-sprout:nth-child(5) { left: 80%; }
+.lp-sprout:nth-child(6) { left: 92%; }
+
+.lp-sprout:nth-child(1) {
+  animation: sproutGrow 2s ease-out 0.3s forwards,
+             sway 3.2s ease-in-out 3.5s infinite;
+}
+.lp-sprout:nth-child(2) {
+  animation: sproutGrow 2s ease-out 0.8s forwards,
+             swaySlow 3.8s ease-in-out 4.0s infinite;
+}
+.lp-sprout:nth-child(3) {
+  animation: sproutGrow 2s ease-out 0.5s forwards,
+             sway 3.5s ease-in-out 3.8s infinite;
+}
+.lp-sprout:nth-child(4) {
+  animation: sproutGrow 2s ease-out 1.0s forwards,
+             swaySlow 4s ease-in-out 4.2s infinite;
+}
+.lp-sprout:nth-child(5) {
+  animation: sproutGrow 2s ease-out 0.6s forwards,
+             sway 3.3s ease-in-out 3.8s infinite;
+}
+.lp-sprout:nth-child(6) {
+  animation: sproutGrow 2s ease-out 1.2s forwards,
+             swaySlow 4.2s ease-in-out 4.5s infinite;
+}
+
+.lp-hero__inner {
+  position: relative;
+  z-index: 1;
   padding: 48px 20px 40px;
   max-width: 600px;
   margin: 0 auto;
@@ -1258,7 +1469,7 @@ textarea.form-input {
 }
 
 .lp-hero__em {
-  color: var(--green-mid);
+  color: #1a8a4a;
 }
 
 .lp-hero__sub {
@@ -1277,22 +1488,19 @@ textarea.form-input {
   color: var(--text-light);
 }
 
-/* セクション */
+/* セクション — 全部中央揃え */
 .lp-section {
   padding: 48px 20px;
-  max-width: 600px;
-  margin: 0 auto;
 }
 
-.lp-section--pale {
-  max-width: none;
-  background: var(--green-bg);
-}
-
-.lp-section--pale > * {
+.lp-section > * {
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
+}
+
+.lp-section--pale {
+  background: var(--green-bg);
 }
 
 .lp-section__title {
@@ -1308,6 +1516,51 @@ textarea.form-input {
   color: var(--text-light);
   text-align: center;
   margin-bottom: 28px;
+}
+
+/* できること（機能セクション） */
+.lp-section--features {
+  background: var(--white);
+  border-bottom: 1px solid var(--green-pale);
+}
+
+.lp-features {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.lp-feature {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--green-pale);
+}
+
+.lp-feature:last-child {
+  border-bottom: none;
+}
+
+.lp-feature__label {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--white);
+  background: var(--green-accent);
+  padding: 2px 10px;
+  border-radius: 4px;
+  margin-bottom: 6px;
+}
+
+.lp-feature__title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--green-dark);
+}
+
+.lp-feature__desc {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  line-height: 1.7;
 }
 
 /* 悩みリスト */
@@ -1389,6 +1642,7 @@ textarea.form-input {
 .lp-voice {
   background: var(--white);
   border: 1px solid var(--green-pale);
+  border-left: 3px solid var(--green-light);
   border-radius: var(--radius);
   padding: 20px;
 }
@@ -1423,6 +1677,7 @@ textarea.form-input {
 
 .lp-plan--rec {
   border-color: var(--green-mid);
+  background: #f8fdf9;
 }
 
 .lp-plan__badge {
@@ -1496,7 +1751,7 @@ textarea.form-input {
   background: #f8faf9;
 }
 
-/* LP表示時はボトムナビとappパディングを無効化 */
+/* LP表示時はボトムナビを非表示 */
 .lp + .bottom-nav {
   display: none;
 }
@@ -1505,4 +1760,112 @@ textarea.form-input {
   .lp-pricing {
     grid-template-columns: 1fr;
   }
+}
+
+/* ============================================
+   カメラ診断ページ
+   ============================================ */
+
+.camera-page-header {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--green-dark);
+  margin-bottom: 16px;
+}
+
+.camera-input-hidden {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.camera-capture-card {
+  padding: 24px 16px;
+}
+
+.camera-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px;
+  margin-bottom: 16px;
+}
+
+.camera-placeholder-icon {
+  width: 56px;
+  height: 56px;
+  color: var(--green-light);
+  margin-bottom: 12px;
+}
+
+.camera-placeholder-text {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.camera-preview-wrap {
+  margin-bottom: 16px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.camera-preview-img {
+  width: 100%;
+  display: block;
+  border-radius: var(--radius-sm);
+}
+
+.camera-btn-row {
+  display: flex;
+  gap: 12px;
+}
+
+.camera-btn-row .btn {
+  flex: 1;
+}
+
+.camera-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px;
+}
+
+.camera-loading-text {
+  margin-top: 12px;
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+
+.camera-result-item {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--green-pale);
+}
+
+.camera-result-item:last-child {
+  border-bottom: none;
+}
+
+.camera-result-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--green-accent);
+  margin-bottom: 4px;
+}
+
+.camera-result-value {
+  font-size: 0.95rem;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.camera-result-action {
+  background: var(--green-bg);
+  border-radius: var(--radius-sm);
+  padding: 14px 12px;
+  margin-top: 8px;
 }

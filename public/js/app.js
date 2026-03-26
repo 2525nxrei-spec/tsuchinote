@@ -13,6 +13,7 @@ var App = (function() {
     '/farm':     { page: FarmPage,     nav: 'farm',     auth: true },
     '/record':   { page: RecordPage,   nav: 'record',   auth: true },
     '/settings': { page: SettingsPage, nav: 'settings', auth: true },
+    '/camera':   { page: CameraPage,   nav: null,       auth: true },
     '/login':    { page: LoginPage,    nav: null,       auth: false },
     '/register': { page: LoginPage,    nav: null,       auth: false }
   };

@@ -121,7 +121,7 @@ var RecordPage = (function() {
     });
 
     return '<div class="page">' +
-      '<div class="page-title">&#128221; 作業記録' +
+      '<div class="page-title">作業記録' +
         '<button class="btn btn-sm btn-primary" id="add-record-btn">+ 記録追加</button>' +
       '</div>' +
       renderCalendar() +
@@ -198,9 +198,11 @@ var RecordPage = (function() {
     TsuchiAPI.farm.list()
       .then(function(res) {
         state.farms = res.data || [];
-        // 全畑の記録を取得（簡易：最初の畑のみ。フィルター対応は将来拡張）
-        if (state.farms.length > 0) {
-          return TsuchiAPI.record.list(state.farms[0].id, {
+        // フィルター選択中の畑、またはデフォルトで最初の畑
+        var filterEl = document.getElementById('record-farm-filter');
+        var farmId = (filterEl && filterEl.value) ? filterEl.value : (state.farms[0] ? state.farms[0].id : null);
+        if (farmId) {
+          return TsuchiAPI.record.list(farmId, {
             month: state.calendarYear + '-' + ('0' + (state.calendarMonth + 1)).slice(-2)
           });
         }

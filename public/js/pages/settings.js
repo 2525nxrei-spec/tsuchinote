@@ -28,22 +28,22 @@ var SettingsPage = (function() {
 
   /** プラン名の日本語表記 */
   function planLabel(plan) {
-    if (plan === 'pro') return 'プロ';
     if (plan === 'light') return 'ライト';
+    if (plan === 'pro') return 'プロ';
     return '無料';
   }
 
   /** プラン金額 */
   function planPrice(plan) {
-    if (plan === 'pro') return '月額300円';
     if (plan === 'light') return '月額100円';
+    if (plan === 'pro') return '月額300円';
     return '0円';
   }
 
   /** プランバッジ */
   function planBadge(plan) {
-    if (plan === 'pro') return '<span class="badge badge-pro">PRO</span>';
     if (plan === 'light') return '<span class="badge badge-light">LIGHT</span>';
+    if (plan === 'pro') return '<span class="badge badge-pro">PRO</span>';
     return '<span class="badge badge-light">FREE</span>';
   }
 
@@ -106,7 +106,7 @@ var SettingsPage = (function() {
     }
 
     return '<div class="page">' +
-      '<div class="page-title">&#9881;&#65039; 設定</div>' +
+      '<div class="page-title">設定</div>' +
 
       // 決済結果通知
       paymentResult +
@@ -134,7 +134,7 @@ var SettingsPage = (function() {
         subInfoHtml +
       '</div>' +
 
-      // プラン比較表
+      // プラン比較表（無料 / ライト / プロ の3プラン構成）
       '<div class="settings-section">' +
         '<table class="plan-table">' +
           '<thead><tr>' +
@@ -142,29 +142,28 @@ var SettingsPage = (function() {
           '</tr></thead>' +
           '<tbody>' +
             '<tr><td>月額</td><td>0円</td><td>100円</td><td>300円</td></tr>' +
-            '<tr><td>畑の数</td><td>1つ</td><td>1つ</td><td>5つ</td></tr>' +
-            '<tr><td>作物数/畑</td><td>5品目</td><td>5品目</td><td>無制限</td></tr>' +
+            '<tr><td>畑の数</td><td>1つ</td><td>3つ</td><td>5つ</td></tr>' +
+            '<tr><td>作物数/畑</td><td>5品目</td><td>10品目</td><td>無制限</td></tr>' +
             '<tr><td>天気予報</td><td>3日間</td><td>5日間</td><td>5日間</td></tr>' +
-            '<tr><td>AI提案</td><td>1日1回</td><td>毎日</td><td>毎日+AI相談</td></tr>' +
+            '<tr><td>AI提案</td><td>1日1回</td><td>1日3回</td><td>毎日+AI相談</td></tr>' +
             '<tr><td>作業記録</td><td>&#9711;</td><td>&#9711;</td><td>&#9711;</td></tr>' +
-            '<tr><td>成長アルバム</td><td>&mdash;</td><td>&mdash;</td><td>&#9711;</td></tr>' +
+            '<tr><td>成長アルバム</td><td>&mdash;</td><td>&#9711;</td><td>&#9711;</td></tr>' +
           '</tbody>' +
         '</table>' +
       '</div>' +
 
-      // アップグレード
+      // アップグレード（ライト / プロ の2プラン）
       (plan !== 'pro' ?
         '<div class="settings-section">' +
           '<div class="settings-section-title">プランをアップグレード</div>' +
           '<div class="plan-select-cards">' +
-            (plan !== 'light' ?
+            (plan === 'free' ?
               '<button class="plan-select-card" id="select-light">' +
                 '<div class="plan-select-name">ライトプラン</div>' +
                 '<div class="plan-select-price">月額 <strong>100</strong>円</div>' +
-                '<div class="plan-select-desc">畑1つ・5品目・天気5日間</div>' +
+                '<div class="plan-select-desc">畑3つ・10品目・AI3回/日</div>' +
               '</button>' : '') +
             '<button class="plan-select-card plan-select-recommended" id="select-pro">' +
-              '<div class="plan-select-badge">おすすめ</div>' +
               '<div class="plan-select-name">プロプラン</div>' +
               '<div class="plan-select-price">月額 <strong>300</strong>円</div>' +
               '<div class="plan-select-desc">畑5つ・無制限・AI相談</div>' +
@@ -277,11 +276,12 @@ var SettingsPage = (function() {
       });
     }
 
-    // 通知トグル
+    // 通知トグル（localStorageで永続化）
     var toggle = document.getElementById('toggle-notify');
     if (toggle) {
       toggle.addEventListener('click', function() {
         state.notifications = !state.notifications;
+        localStorage.setItem('tsuchi_notifications', state.notifications ? '1' : '0');
         this.classList.toggle('active');
         App.toast(state.notifications ? '通知をオンにしました' : '通知をオフにしました');
       });
@@ -323,6 +323,11 @@ var SettingsPage = (function() {
 
   /** 初期化 */
   function init() {
+    // 通知設定をlocalStorageから復元
+    var saved = localStorage.getItem('tsuchi_notifications');
+    if (saved !== null) {
+      state.notifications = saved === '1';
+    }
     loadPlanInfo();
   }
 

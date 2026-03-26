@@ -9,9 +9,13 @@
 // ============================================================
 const STRIPE_API_BASE = 'https://api.stripe.com/v1';
 
-/** プランIDとStripe Price IDのマッピング */
+/** 本番 Stripe Price ID */
+const STRIPE_PRICE_LIGHT = 'price_1TF9k09Fc8HnuaokrMmKlFo4';
+const STRIPE_PRICE_PRO = 'price_1TFA2Y9Fc8Hnuaokitufi136';
+
+/** プランIDとStripe Price IDのマッピング（Light / Pro の2プラン） */
 const PLAN_MAP = {
-  light: 'STRIPE_PRICE_LIGHT', // env変数名
+  light: 'STRIPE_PRICE_LIGHT',
   pro: 'STRIPE_PRICE_PRO',
 };
 
@@ -139,7 +143,7 @@ async function verifyWebhookSignature(payload, signatureHeader, secret) {
 /**
  * Stripe Checkout Sessionを作成
  * @param {string} userId - ユーザーID
- * @param {string} planId - プランID（"light" or "pro"）
+ * @param {string} planId - プランID（"light" または "pro"）
  * @param {object} env - Workers環境変数
  * @returns {Promise<object>} { url, session_id }
  */
@@ -171,7 +175,9 @@ export async function createCheckout(userId, planId, env) {
   const appUrl = env.APP_URL || 'https://tsuchi-note.pages.dev';
 
   // Checkout Session作成パラメータ
-  const priceId = env[PLAN_MAP[planId]];
+  // 環境変数にPrice IDがあればそちらを優先、なければコード内定数を使用
+  const fallbackPrice = planId === 'light' ? STRIPE_PRICE_LIGHT : STRIPE_PRICE_PRO;
+  const priceId = env[PLAN_MAP[planId]] || fallbackPrice;
   if (!priceId) {
     throw new Error(`Stripe Price IDが設定されていません: ${PLAN_MAP[planId]}`);
   }
@@ -347,8 +353,9 @@ async function handleSubscriptionDeleted(subscription, env) {
  * @returns {string} プラン名
  */
 function resolvePlanFromPriceId(priceId, env) {
-  if (priceId === env.STRIPE_PRICE_LIGHT) return 'light';
-  if (priceId === env.STRIPE_PRICE_PRO) return 'pro';
+  // 環境変数またはコード内定数と照合
+  if (priceId === (env.STRIPE_PRICE_LIGHT || STRIPE_PRICE_LIGHT)) return 'light';
+  if (priceId === (env.STRIPE_PRICE_PRO || STRIPE_PRICE_PRO)) return 'pro';
   return 'free'; // 不明なPrice IDの場合はfreeに
 }
 

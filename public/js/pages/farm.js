@@ -29,19 +29,19 @@ var FarmPage = (function() {
 
   /** 畑一覧のHTML */
   function renderFarmList() {
-    var html = '<div class="page-title">&#127806; 畑の管理' +
+    var html = '<div class="page-title">畑の管理' +
       '<button class="btn btn-sm btn-primary" id="add-farm-btn">+ 畑を追加</button></div>';
 
     if (state.farms.length === 0) {
       html += '<div class="empty-state">' +
-        '<div class="empty-state-icon">&#127793;</div>' +
+        '<div class="empty-state-icon"></div>' +
         '<div class="empty-state-text">まだ畑が登録されていません</div>' +
         '<button class="btn btn-primary" id="add-farm-btn2">最初の畑を登録する</button></div>';
     } else {
       state.farms.forEach(function(farm) {
         var cropCount = farm.crop_count || 0;
         html += '<div class="farm-card" data-farm-id="' + farm.id + '">' +
-          '<div class="farm-card-icon">&#127807;</div>' +
+          '<div class="farm-card-icon"></div>' +
           '<div class="farm-card-info">' +
             '<div class="farm-card-name">' + escapeHtml(farm.name) + '</div>' +
             '<div class="farm-card-meta">' + cropCount + '品目 栽培中</div>' +
@@ -64,7 +64,7 @@ var FarmPage = (function() {
 
     if (state.crops.length === 0) {
       html += '<div class="empty-state">' +
-        '<div class="empty-state-icon">&#127793;</div>' +
+        '<div class="empty-state-icon"></div>' +
         '<div class="empty-state-text">作物を追加して栽培を始めましょう</div>' +
         '<button class="btn btn-primary" id="add-crop-btn2">作物を追加する</button></div>';
     } else {
@@ -105,6 +105,51 @@ var FarmPage = (function() {
     return '<div class="page">' + content + '</div>';
   }
 
+  /** 位置情報を取得する共通処理 */
+  function fetchGeolocation() {
+    var statusEl = document.getElementById('location-status');
+    var locationInput = document.getElementById('farm-location');
+    var latInput = document.getElementById('farm-lat');
+    var lonInput = document.getElementById('farm-lon');
+    var btn = document.getElementById('get-location-btn');
+
+    if (!navigator.geolocation) {
+      if (statusEl) {
+        statusEl.textContent = 'この端末では位置情報を取得できません';
+        statusEl.className = 'location-status location-status--error';
+      }
+      return;
+    }
+
+    // 取得中の表示
+    if (statusEl) {
+      statusEl.textContent = '位置情報を取得中...';
+      statusEl.className = 'location-status location-status--loading';
+    }
+    if (btn) btn.disabled = true;
+
+    navigator.geolocation.getCurrentPosition(function(pos) {
+      if (latInput) latInput.value = pos.coords.latitude;
+      if (lonInput) lonInput.value = pos.coords.longitude;
+      // ユーザーが手動入力していない場合のみ自動反映
+      if (locationInput && !locationInput.dataset.manualEdit) {
+        locationInput.value =
+          '緯度 ' + pos.coords.latitude.toFixed(4) + ' / 経度 ' + pos.coords.longitude.toFixed(4);
+      }
+      if (statusEl) {
+        statusEl.textContent = '取得完了';
+        statusEl.className = 'location-status';
+      }
+      if (btn) btn.disabled = false;
+    }, function() {
+      if (statusEl) {
+        statusEl.textContent = '位置情報の取得に失敗しました';
+        statusEl.className = 'location-status location-status--error';
+      }
+      if (btn) btn.disabled = false;
+    });
+  }
+
   /** 畑追加モーダルを表示 */
   function showAddFarmModal() {
     var overlay = document.createElement('div');
@@ -121,7 +166,8 @@ var FarmPage = (function() {
           '<div class="form-group">' +
             '<label class="form-label">場所（住所 または 位置情報）</label>' +
             '<input class="form-input" type="text" id="farm-location" placeholder="例: 東京都世田谷区">' +
-            '<button type="button" class="btn btn-sm btn-secondary mt-8" id="get-location-btn">&#128205; 現在地を取得</button>' +
+            '<div class="location-status location-status--loading" id="location-status">位置情報を取得中...</div>' +
+            '<button type="button" class="btn btn-sm btn-secondary mt-8" id="get-location-btn">再取得</button>' +
           '</div>' +
           '<input type="hidden" id="farm-lat" value="">' +
           '<input type="hidden" id="farm-lon" value="">' +
@@ -135,25 +181,20 @@ var FarmPage = (function() {
     document.getElementById('close-farm-modal').addEventListener('click', closeModal);
     overlay.addEventListener('click', function(e) { if (e.target === overlay) closeModal(); });
 
-    // 位置情報取得
-    document.getElementById('get-location-btn').addEventListener('click', function() {
-      if (!navigator.geolocation) {
-        App.toast('この端末では位置情報を取得できません。', 'warning');
-        return;
-      }
-      this.textContent = '取得中...';
-      var self = this;
-      navigator.geolocation.getCurrentPosition(function(pos) {
-        document.getElementById('farm-lat').value = pos.coords.latitude;
-        document.getElementById('farm-lon').value = pos.coords.longitude;
-        document.getElementById('farm-location').value =
-          '緯度 ' + pos.coords.latitude.toFixed(4) + ' / 経度 ' + pos.coords.longitude.toFixed(4);
-        self.textContent = '\u2705 取得完了';
-      }, function() {
-        App.toast('位置情報の取得に失敗しました。', 'error');
-        self.textContent = '\uD83D\uDCCD 現在地を取得';
-      });
+    // 手動入力フラグ: ユーザーが場所欄を編集したら自動上書きしない
+    document.getElementById('farm-location').addEventListener('input', function() {
+      this.dataset.manualEdit = 'true';
     });
+
+    // 再取得ボタン: 手動入力フラグをリセットして再取得
+    document.getElementById('get-location-btn').addEventListener('click', function() {
+      var locationInput = document.getElementById('farm-location');
+      if (locationInput) delete locationInput.dataset.manualEdit;
+      fetchGeolocation();
+    });
+
+    // モーダル表示と同時に自動取得を開始
+    fetchGeolocation();
 
     // 送信
     document.getElementById('farm-form').addEventListener('submit', function(e) {

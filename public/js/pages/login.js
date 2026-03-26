@@ -9,7 +9,7 @@ var LoginPage = (function() {
   function render() {
     return '' +
       '<div class="login-page">' +
-        '<div class="login-logo">&#127793;</div>' +
+        '<div class="login-logo" style="font-size:1.5rem;font-weight:800;color:#1b4332;">ツチノート</div>' +
         '<h1 class="login-title">ツチノート</h1>' +
         '<p class="login-subtitle">毎朝届く、畑の天気予報</p>' +
         '<div class="login-card">' +
@@ -29,6 +29,7 @@ var LoginPage = (function() {
             '</div>' +
             '<button type="submit" class="btn btn-primary btn-block">ログイン</button>' +
           '</form>' +
+          '<button id="test-login-btn" style="margin-top:16px;width:100%;padding:14px;border:none;border-radius:8px;background:#ef4444;color:#fff;font-size:1rem;font-weight:700;cursor:pointer;">テストログイン（開発用）</button>' +
           '<!-- 登録フォーム（初期非表示） -->' +
           '<form id="register-form" style="display:none;">' +
             '<div class="form-group">' +
@@ -100,6 +101,17 @@ var LoginPage = (function() {
           btn.disabled = false;
         });
     });
+
+    // テストログイン（開発用 — 本番前に削除）
+    var testBtn = document.getElementById('test-login-btn');
+    if (testBtn) {
+      testBtn.addEventListener('click', function() {
+        localStorage.setItem('tsuchi_token', 'test-token-dev');
+        localStorage.setItem('tsuchi_user', JSON.stringify({ name: 'テストユーザー', email: 'test@example.com', plan: 'pro' }));
+        App.toast('テストログインしました');
+        window.location.hash = '#/home';
+      });
+    }
 
     // 登録送信
     registerForm.addEventListener('submit', function(e) {

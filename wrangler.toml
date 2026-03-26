@@ -26,12 +26,16 @@ bucket_name = "tsuchinote-storage"
 # 環境変数（シークレットは wrangler secret put で設定）
 [vars]
 APP_URL = "https://tsuchinote.pages.dev"
+STRIPE_PRICE_LIGHT = "price_1TF9k09Fc8HnuaokrMmKlFo4"
+STRIPE_PRICE_PRO = "price_1TFA2Y9Fc8Hnuaokitufi136"
 
 # 本番環境
 [env.production]
 name = "tsuchinote"
 [env.production.vars]
 APP_URL = "https://tsuchinote.pages.dev"
+STRIPE_PRICE_LIGHT = "price_1TF9k09Fc8HnuaokrMmKlFo4"
+STRIPE_PRICE_PRO = "price_1TFA2Y9Fc8Hnuaokitufi136"
 
 # ステージング環境
 [env.staging]
