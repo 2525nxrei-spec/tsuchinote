@@ -6,7 +6,18 @@
   <meta name="description" content="ツチノートは、畑の天気と今日やることを毎朝教えてくれる家庭菜園のおともアプリです。">
   <meta name="theme-color" content="#2d6a4f">
   <title>ツチノート | 畑の天気と今日やること、毎朝届けます</title>
-  <link rel="canonical" href="https://tsuchinote.app/">
+  <link rel="canonical" href="https://tsuchinote.com/">
+  <meta property="og:title" content="ツチノート | 畑の天気と今日やること、毎朝届けます">
+  <meta property="og:description" content="家庭菜園のおともアプリ。天気予報と作業提案を毎朝お届け。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://tsuchinote.com/">
+  <meta property="og:image" content="https://tsuchinote.com/icons/ogp.png">
+  <meta property="og:site_name" content="ツチノート">
+  <meta property="og:locale" content="ja_JP">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ツチノート | 畑の天気と今日やること、毎朝届けます">
+  <meta name="twitter:description" content="家庭菜園のおともアプリ。天気予報と作業提案を毎朝お届け。">
+  <meta name="twitter:image" content="https://tsuchinote.com/icons/ogp.png">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" sizes="192x192" href="/icons/icon-192.svg">
   <link rel="apple-touch-icon" href="/icons/icon-192.svg">
@@ -246,7 +257,7 @@
     /* 料金 */
     .pricing-grid {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 20px; max-width: 600px; margin: 0 auto;
+      gap: 20px; max-width: 900px; margin: 0 auto;
     }
     .pricing-card {
       background: var(--white); border-radius: var(--radius);
@@ -535,7 +546,7 @@
       <div class="container">
         <h2 class="section__title text-center">料金</h2>
         <p class="section__lead text-center">
-          基本は無料。もうちょっと使いたくなったらProへ。
+          基本は無料。もうちょっと使いたくなったらLight、しっかり使うならProへ。
         </p>
         <div class="pricing-grid">
           <div class="pricing-card">
@@ -552,11 +563,32 @@
             </div>
             <a href="app.html" class="btn btn--outline btn--full">無料ではじめる</a>
           </div>
+          <div class="pricing-card">
+            <p class="pricing-card__name">Light</p>
+            <p class="pricing-card__price">&yen;100<span class="pricing-card__price-unit">/月</span></p>
+            <p class="pricing-card__desc">畑が増えてきたら。</p>
+            <div class="pricing-card__features">
+              <div class="pricing-card__feat"><span class="pricing-card__feat-check">&#10003;</span><span>畑3つまで</span></div>
+              <div class="pricing-card__feat"><span class="pricing-card__feat-check">&#10003;</span><span>毎日の天気予報</span></div>
+              <div class="pricing-card__feat"><span class="pricing-card__feat-check">&#10003;</span><span>今日の作業提案</span></div>
+              <div class="pricing-card__feat"><span class="pricing-card__feat-check">&#10003;</span><span>作業記録（無制限）</span></div>
+              <div class="pricing-card__feat pricing-card__feat--off"><span class="pricing-card__feat-check">—</span><span>週間カレンダー</span></div>
+              <div class="pricing-card__feat pricing-card__feat--off"><span class="pricing-card__feat-check">—</span><span>記録エクスポート</span></div>
+            </div>
+            <a href="app.html" class="btn btn--outline btn--full">Lightではじめる</a>
+            <div class="payment-badges">
+              <span class="payment-badge">クレカ</span>
+              <span class="payment-badge">PayPay</span>
+              <span class="payment-badge">Apple Pay</span>
+              <span class="payment-badge">Google Pay</span>
+              <span class="payment-badge">コンビニ払い</span>
+            </div>
+          </div>
           <div class="pricing-card pricing-card--rec">
             <span class="pricing-card__badge">おすすめ</span>
             <p class="pricing-card__name">Pro</p>
-            <p class="pricing-card__price">&yen;100<span class="pricing-card__price-unit">/月</span></p>
-            <p class="pricing-card__desc">畑が増えてきたら。</p>
+            <p class="pricing-card__price">&yen;300<span class="pricing-card__price-unit">/月</span></p>
+            <p class="pricing-card__desc">しっかり使いこなすなら。</p>
             <div class="pricing-card__features">
               <div class="pricing-card__feat"><span class="pricing-card__feat-check">&#10003;</span><span>畑5つまで</span></div>
               <div class="pricing-card__feat"><span class="pricing-card__feat-check">&#10003;</span><span>毎日の天気予報</span></div>
@@ -571,6 +603,7 @@
               <span class="payment-badge">PayPay</span>
               <span class="payment-badge">Apple Pay</span>
               <span class="payment-badge">Google Pay</span>
+              <span class="payment-badge">コンビニ払い</span>
             </div>
           </div>
         </div>
@@ -622,7 +655,7 @@
               <span>支払い方法は？</span>
               <span class="faq-icon" aria-hidden="true">+</span>
             </button>
-            <div class="faq-a">クレジットカード（Visa / Mastercard / JCB / Amex）、PayPay、Apple Pay、Google Payに対応。決済はStripe経由です。カード情報はこちらで保存しません。</div>
+            <div class="faq-a">クレジットカード（Visa / Mastercard / JCB / Amex）、PayPay、Apple Pay、Google Pay、コンビニ払いに対応。決済はStripe経由です。カード情報はこちらで保存しません。</div>
           </div>
         </div>
       </div>
@@ -655,15 +688,16 @@
         </div>
         <div>
           <p class="footer__nav-title">運営</p>
-          <a href="https://rei-inc.jp" class="footer__nav-link" target="_blank" rel="noopener noreferrer">礼株式会社</a>
+          <a href="https://rei-inc.jp" class="footer__nav-link" target="_blank" rel="noopener noreferrer">運営者情報</a>
         </div>
       </div>
       <div class="footer__bottom">
-        <p>&copy; 2026 礼株式会社</p>
+        <p>&copy; 2026 濱田礼</p>
         <div class="footer__legal">
           <a href="terms.html" class="footer__legal-link">利用規約</a>
           <a href="privacy.html" class="footer__legal-link">プライバシーポリシー</a>
           <a href="legal.html" class="footer__legal-link">特定商取引法に基づく表記</a>
+          <a href="contact.html" class="footer__legal-link">お問い合わせ</a>
         </div>
       </div>
     </div>

@@ -7,8 +7,8 @@ import { requireAuth } from '../../../../lib/auth-helper.js';
 import { generateUlid, jsonResponse, errorResponse } from '../../../../lib/utils.js';
 import { calculateStage, estimateHarvest } from '../../../../lib/crop-helper.js';
 
-// ライトプランの1畑あたり品目上限
-const CROP_LIMIT_LIGHT = 5;
+// プランごとの1畑あたり品目上限（設定画面の比較表と一致: Free=5, Light=10, Pro=無制限）
+const CROP_LIMITS = { free: 5, light: 10 };
 
 export async function onRequestGet(context) {
   const { request, env, params } = context;
@@ -82,13 +82,14 @@ export async function onRequestPost(context) {
   ).bind(farmId, userId).first();
   if (!farm) return errorResponse('畑が見つかりません', 404);
 
-  // ライトプランの品目数制限
-  if (userPlan === 'light' || userPlan === 'free') {
+  // プランごとの品目数制限（proは無制限）
+  const cropLimit = CROP_LIMITS[userPlan];
+  if (cropLimit) {
     const countResult = await env.DB.prepare(
       'SELECT COUNT(*) as cnt FROM crops WHERE farm_id = ? AND user_id = ?'
     ).bind(farmId, userId).first();
-    if (countResult.cnt >= CROP_LIMIT_LIGHT) {
-      return errorResponse(`現在のプランでは1つの畑に${CROP_LIMIT_LIGHT}品目までです`, 403);
+    if (countResult.cnt >= cropLimit) {
+      return errorResponse(`現在のプラン（${userPlan}）では1つの畑に${cropLimit}品目までです。プランをアップグレードしてください。`, 403);
     }
   }
 

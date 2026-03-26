@@ -113,7 +113,7 @@ export function errorResponse(message, status = 400) {
 /** CORSヘッダー付与 */
 function withCors(response) {
   const headers = new Headers(response.headers);
-  headers.set('Access-Control-Allow-Origin', '*');
+  headers.set('Access-Control-Allow-Origin', 'https://tsuchinote.com');
   headers.set('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
   headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
@@ -159,7 +159,10 @@ export default {
         return withCors(errorResponse('認証が必要です', 401));
       }
       const token = authHeader.slice(7);
-      const payload = await verifyJwt(token, env.JWT_SECRET || 'tsuchi-note-dev-secret');
+      if (!env.JWT_SECRET) {
+        return withCors(errorResponse('サーバー設定エラー: JWT_SECRETが未設定です', 500));
+      }
+      const payload = await verifyJwt(token, env.JWT_SECRET);
       if (!payload) {
         return withCors(errorResponse('トークンが無効です', 401));
       }

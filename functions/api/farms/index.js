@@ -7,7 +7,8 @@ import { requireAuth } from '../../lib/auth-helper.js';
 import { generateUlid, jsonResponse, errorResponse } from '../../lib/utils.js';
 
 // プランごとの畑上限数
-const FARM_LIMITS = { free: 1, light: 1, pro: 5 };
+// プランごとの畑上限数（設定画面の比較表と一致させる: Free=1, Light=3, Pro=5）
+const FARM_LIMITS = { free: 1, light: 3, pro: 5 };
 
 export async function onRequestGet(context) {
   const { request, env } = context;

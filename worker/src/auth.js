@@ -64,7 +64,10 @@ export async function handleRegister(request, env) {
   ).bind(id, email, passwordHash, salt, name, now, now).run();
 
   const user = { id, email, name, plan: 'free' };
-  const secret = env.JWT_SECRET || 'tsuchi-note-dev-secret';
+  if (!env.JWT_SECRET) {
+    return errorResponse('サーバー設定エラー: JWT_SECRETが未設定です', 500);
+  }
+  const secret = env.JWT_SECRET;
   const token = await issueToken(user, secret);
 
   return jsonResponse({ token, user }, 201);
@@ -99,7 +102,10 @@ export async function handleLogin(request, env) {
     return errorResponse('メールアドレスまたはパスワードが正しくありません', 401);
   }
 
-  const secret = env.JWT_SECRET || 'tsuchi-note-dev-secret';
+  if (!env.JWT_SECRET) {
+    return errorResponse('サーバー設定エラー: JWT_SECRETが未設定です', 500);
+  }
+  const secret = env.JWT_SECRET;
   const token = await issueToken(user, secret);
 
   return jsonResponse({

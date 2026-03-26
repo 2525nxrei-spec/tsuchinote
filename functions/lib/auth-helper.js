@@ -17,7 +17,10 @@ export async function requireAuth(request, env) {
     return { error: errorResponse('認証が必要です', 401) };
   }
   const token = authHeader.slice(7);
-  const payload = await verifyJwt(token, env.JWT_SECRET || 'tsuchi-note-dev-secret');
+  if (!env.JWT_SECRET) {
+    return { error: errorResponse('サーバー設定エラー: JWT_SECRETが未設定です', 500) };
+  }
+  const payload = await verifyJwt(token, env.JWT_SECRET);
   if (!payload) {
     return { error: errorResponse('トークンが無効です', 401) };
   }

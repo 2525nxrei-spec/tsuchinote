@@ -172,7 +172,7 @@ export async function createCheckout(userId, planId, env) {
   }
 
   // アプリのベースURL
-  const appUrl = env.APP_URL || 'https://tsuchi-note.pages.dev';
+  const appUrl = env.APP_URL || 'https://tsuchinote.com';
 
   // Checkout Session作成パラメータ
   // 環境変数にPrice IDがあればそちらを優先、なければコード内定数を使用
@@ -182,10 +182,10 @@ export async function createCheckout(userId, planId, env) {
     throw new Error(`Stripe Price IDが設定されていません: ${PLAN_MAP[planId]}`);
   }
 
+  // payment_method_types を指定しない → Stripeダッシュボードで有効化した決済方法が全て自動表示
+  // （card=クレカ/Apple Pay/Google Pay、paypay、konbini 等）
   const params = {
     'mode': 'subscription',
-    'payment_method_types[0]': 'card',
-    'payment_method_types[1]': 'paypay',
     'line_items[0][price]': priceId,
     'line_items[0][quantity]': '1',
     'success_url': `${appUrl}/#/settings?payment=success`,

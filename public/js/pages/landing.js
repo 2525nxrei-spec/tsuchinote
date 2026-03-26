@@ -158,7 +158,7 @@ var LandingPage = (function() {
         // 料金
         '<section class="lp-section lp-section--pale">' +
           '<h2 class="lp-section__title">料金</h2>' +
-          '<p class="lp-section__lead">基本は無料。もうちょっと使いたくなったらProへ。</p>' +
+          '<p class="lp-section__lead">基本は無料。もうちょっと使いたくなったらLight、しっかり使うならProへ。</p>' +
           '<div class="lp-pricing">' +
             '<div class="lp-plan">' +
               '<p class="lp-plan__name">Free</p>' +
@@ -171,10 +171,21 @@ var LandingPage = (function() {
               '</ul>' +
               '<a href="#/register" class="btn btn-outline btn-block">無料ではじめる</a>' +
             '</div>' +
+            '<div class="lp-plan">' +
+              '<p class="lp-plan__name">Light</p>' +
+              '<p class="lp-plan__price">&yen;100<span class="lp-plan__unit">/月</span></p>' +
+              '<ul class="lp-plan__list">' +
+                '<li>&#10003; 畑3つまで</li>' +
+                '<li>&#10003; 天気予報・作業提案</li>' +
+                '<li>&#10003; 育て方ガイド</li>' +
+                '<li>&#10003; 作業記録（無制限）</li>' +
+              '</ul>' +
+              '<a href="#/register" class="btn btn-outline btn-block">Lightではじめる</a>' +
+            '</div>' +
             '<div class="lp-plan lp-plan--rec">' +
               '<span class="lp-plan__badge">おすすめ</span>' +
               '<p class="lp-plan__name">Pro</p>' +
-              '<p class="lp-plan__price">&yen;100<span class="lp-plan__unit">/月</span></p>' +
+              '<p class="lp-plan__price">&yen;300<span class="lp-plan__unit">/月</span></p>' +
               '<ul class="lp-plan__list">' +
                 '<li>&#10003; 畑5つまで</li>' +
                 '<li>&#10003; くわしい作業提案</li>' +
@@ -195,7 +206,7 @@ var LandingPage = (function() {
         '</section>' +
 
         '<div class="lp-footer">' +
-          '<p>ツチノート — 礼株式会社</p>' +
+          '<p>ツチノート — 濱田礼</p>' +
         '</div>' +
 
       '</div>';

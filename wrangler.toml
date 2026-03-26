@@ -1,16 +1,15 @@
-# ツチノート - Cloudflare Workers設定
+# ============================================================
+# ツチノート — Cloudflare Pages 設定
+# ============================================================
+
 name = "tsuchinote"
-main = "worker/src/index.js"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = "./public"
 
 # 開発用ローカルポート
 [dev]
 port = 8788
-
-# 静的アセット（PWAフロントエンド）
-[assets]
-directory = "./public"
 
 # D1データベース バインディング
 [[d1_databases]]
@@ -23,22 +22,28 @@ database_id = "8bcb8802-3b89-4fb5-b1d9-92a1ad1aa51b"
 binding = "STORAGE"
 bucket_name = "tsuchinote-storage"
 
-# 環境変数（シークレットは wrangler secret put で設定）
+# 環境変数（シークレットは wrangler pages secret put で設定）
+# wrangler pages secret put STRIPE_SECRET_KEY --project-name tsuchinote
+# wrangler pages secret put STRIPE_WEBHOOK_SECRET --project-name tsuchinote
 [vars]
-APP_URL = "https://tsuchinote.pages.dev"
+APP_URL = "https://tsuchinote.com"
 STRIPE_PRICE_LIGHT = "price_1TF9k09Fc8HnuaokrMmKlFo4"
 STRIPE_PRICE_PRO = "price_1TFA2Y9Fc8Hnuaokitufi136"
 
+# ============================================================
 # 本番環境
+# ============================================================
 [env.production]
 name = "tsuchinote"
 [env.production.vars]
-APP_URL = "https://tsuchinote.pages.dev"
+APP_URL = "https://tsuchinote.com"
 STRIPE_PRICE_LIGHT = "price_1TF9k09Fc8HnuaokrMmKlFo4"
 STRIPE_PRICE_PRO = "price_1TFA2Y9Fc8Hnuaokitufi136"
 
-# ステージング環境
-[env.staging]
+# ============================================================
+# プレビュー環境
+# ============================================================
+[env.preview]
 name = "tsuchinote-staging"
-[env.staging.vars]
+[env.preview.vars]
 APP_URL = "https://staging.tsuchinote.pages.dev"

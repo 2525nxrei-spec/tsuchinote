@@ -52,7 +52,10 @@ export async function onRequestPost(context) {
   ).bind(id, email, passwordHash, salt, name, now, now).run();
 
   const user = { id, email, name, plan: 'free' };
-  const secret = env.JWT_SECRET || 'tsuchi-note-dev-secret';
+  if (!env.JWT_SECRET) {
+    return errorResponse('サーバー設定エラー: JWT_SECRETが未設定です', 500);
+  }
+  const secret = env.JWT_SECRET;
   const jwtNow = Math.floor(Date.now() / 1000);
   const token = await createJwt({
     sub: user.id,
