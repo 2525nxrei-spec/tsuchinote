@@ -155,16 +155,19 @@ var FarmPage = (function() {
     var overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
     overlay.id = 'farm-modal';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-label', '畑を追加');
     overlay.innerHTML =
       '<div class="modal">' +
-        '<div class="modal-title">畑を追加 <button class="modal-close" id="close-farm-modal">&times;</button></div>' +
+        '<div class="modal-title">畑を追加 <button class="modal-close" id="close-farm-modal" aria-label="閉じる">&times;</button></div>' +
         '<form id="farm-form">' +
           '<div class="form-group">' +
-            '<label class="form-label">畑の名前</label>' +
-            '<input class="form-input" type="text" id="farm-name" placeholder="例: 家の裏の畑" required>' +
+            '<label class="form-label" for="farm-name">畑の名前</label>' +
+            '<input class="form-input" type="text" id="farm-name" placeholder="例: 家の裏の畑" required aria-required="true">' +
           '</div>' +
           '<div class="form-group">' +
-            '<label class="form-label">場所（住所 または 位置情報）</label>' +
+            '<label class="form-label" for="farm-location">場所（住所 または 位置情報）</label>' +
             '<input class="form-input" type="text" id="farm-location" placeholder="例: 東京都世田谷区">' +
             '<div class="location-status location-status--loading" id="location-status">位置情報を取得中...</div>' +
             '<button type="button" class="btn btn-sm btn-secondary mt-8" id="get-location-btn">再取得</button>' +
@@ -195,6 +198,10 @@ var FarmPage = (function() {
 
     // モーダル表示と同時に自動取得を開始
     fetchGeolocation();
+
+    // モーダル内にフォーカスを移動
+    var nameInput = document.getElementById('farm-name');
+    if (nameInput) setTimeout(function() { nameInput.focus(); }, 100);
 
     // 送信（二重送信防止）
     App.guardSubmit(document.getElementById('farm-form'), function() {
@@ -235,20 +242,23 @@ var FarmPage = (function() {
     var overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
     overlay.id = 'crop-modal';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-label', '作物を追加');
     overlay.innerHTML =
       '<div class="modal">' +
-        '<div class="modal-title">作物を追加 <button class="modal-close" id="close-crop-modal">&times;</button></div>' +
+        '<div class="modal-title">作物を追加 <button class="modal-close" id="close-crop-modal" aria-label="閉じる">&times;</button></div>' +
         '<form id="crop-form">' +
           '<div class="form-group">' +
-            '<label class="form-label">品目</label>' +
-            '<select class="form-input" id="crop-type" required>' + options + '</select>' +
+            '<label class="form-label" for="crop-type">品目</label>' +
+            '<select class="form-input" id="crop-type" required aria-required="true">' + options + '</select>' +
           '</div>' +
           '<div class="form-group">' +
-            '<label class="form-label">植え付け日</label>' +
+            '<label class="form-label" for="crop-planted">植え付け日</label>' +
             '<input class="form-input" type="date" id="crop-planted" value="' + new Date().toISOString().slice(0, 10) + '">' +
           '</div>' +
           '<div class="form-group">' +
-            '<label class="form-label">メモ（任意）</label>' +
+            '<label class="form-label" for="crop-memo">メモ（任意）</label>' +
             '<textarea class="form-input" id="crop-memo" placeholder="品種名や種の情報など"></textarea>' +
           '</div>' +
           '<button type="submit" class="btn btn-primary btn-block mt-16">追加する</button>' +
@@ -259,6 +269,10 @@ var FarmPage = (function() {
 
     document.getElementById('close-crop-modal').addEventListener('click', closeModal);
     overlay.addEventListener('click', function(e) { if (e.target === overlay) closeModal(); });
+
+    // モーダル内にフォーカスを移動
+    var cropTypeInput = document.getElementById('crop-type');
+    if (cropTypeInput) setTimeout(function() { cropTypeInput.focus(); }, 100);
 
     App.guardSubmit(document.getElementById('crop-form'), function() {
       var cropType = document.getElementById('crop-type').value;
@@ -321,16 +335,28 @@ var FarmPage = (function() {
     if (addBtn) addBtn.addEventListener('click', showAddFarmModal);
     if (addBtn2) addBtn2.addEventListener('click', showAddFarmModal);
 
-    // 畑カードクリック → 詳細表示
+    // 畑カードクリック → 詳細表示（キーボード対応）
     var farmCards = document.querySelectorAll('.farm-card');
     farmCards.forEach(function(card) {
-      card.addEventListener('click', function() {
-        var farmId = this.dataset.farmId;
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('aria-label', card.querySelector('.farm-card-name').textContent + 'の詳細を見る');
+
+      function openFarmDetail(el) {
+        var farmId = el.dataset.farmId;
         state.selectedFarm = state.farms.find(function(f) { return f.id == farmId; });
         state.view = 'detail';
         state.crops = [];
         App.renderCurrentPage();
         loadCrops(farmId);
+      }
+
+      card.addEventListener('click', function() { openFarmDetail(this); });
+      card.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openFarmDetail(this);
+        }
       });
     });
 
@@ -350,20 +376,23 @@ var FarmPage = (function() {
     if (addCropBtn) addCropBtn.addEventListener('click', showAddCropModal);
     if (addCropBtn2) addCropBtn2.addEventListener('click', showAddCropModal);
 
-    // 畑削除ボタン
+    // 畑削除ボタン（ボタンフィードバック + 二重送信防止）
     var deleteBtn = document.getElementById('delete-farm-btn');
     if (deleteBtn) {
       deleteBtn.addEventListener('click', function() {
         if (!confirm(state.selectedFarm.name + 'を削除しますか？\n栽培中の作物もすべて削除されます。')) return;
+        var restore = App.btnLoading(deleteBtn, '畑を削除中...');
         TsuchiAPI.farm.remove(state.selectedFarm.id)
           .then(function() {
+            restore(true);
             App.toast('畑を削除しました。');
             state.view = 'list';
             state.selectedFarm = null;
             loadFarms();
           })
           .catch(function(err) {
-            App.toast(err.error || '削除に失敗しました。', 'error');
+            restore(false);
+            App.toast(err.error || '削除に失敗しました。通信状況を確認してください。', 'error');
           });
       });
     }

@@ -13,6 +13,8 @@
     p{font-size:0.95rem;color:#4a7856;line-height:1.8;margin-bottom:32px}
     .btn{display:inline-block;background:#1b4332;color:#fff;font-size:0.9rem;font-weight:600;padding:14px 36px;border-radius:12px;text-decoration:none;transition:opacity 0.2s}
     .btn:hover{opacity:0.85}
+    .btn:focus-visible{outline:3px solid #2d6a4f;outline-offset:2px}
+    a:focus-visible{outline:3px solid #2d6a4f;outline-offset:2px}
     .footer{position:fixed;bottom:16px;font-size:0.72rem;color:#8aab91}
   </style>
 </head>
@@ -20,7 +22,7 @@
   <div class="code">404</div>
   <h1>ページが見つかりません</h1>
   <p>お探しのページは移動または削除された可能性があります。<br>URLをご確認ください。</p>
-  <a href="/app.html" class="btn">トップページへ戻る</a>
+  <a href="/app.html" class="btn" aria-label="トップページへ戻る">トップページへ戻る</a>
   <div class="footer">&copy; 2026 ツチノート</div>
 </body>
 </html>

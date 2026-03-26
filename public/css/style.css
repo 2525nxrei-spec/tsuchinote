@@ -1257,6 +1257,20 @@ textarea.form-input {
   animation: checkPop 0.3s ease-out;
 }
 
+/* btn-outline/btn-dangerのスピナー色調整 */
+.btn-outline.btn-loading::after {
+  border-color: rgba(45, 106, 79, 0.3);
+  border-top-color: var(--green-mid);
+}
+.btn-outline.btn-success::after {
+  border-left-color: var(--green-mid);
+  border-bottom-color: var(--green-mid);
+}
+.btn-danger.btn-success::after {
+  border-left-color: var(--white);
+  border-bottom-color: var(--white);
+}
+
 @keyframes checkPop {
   0% { transform: rotate(-45deg) scale(0); }
   60% { transform: rotate(-45deg) scale(1.2); }

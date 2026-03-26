@@ -64,6 +64,7 @@ export async function onRequestPost(context) {
         : 'unknown',
     });
   } catch (err) {
-    return errorResponse(err.message, 400);
+    console.error('解約エラー:', err.message);
+    return errorResponse('解約処理に失敗しました', 500);
   }
 }

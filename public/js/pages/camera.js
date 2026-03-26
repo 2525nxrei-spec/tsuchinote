@@ -124,11 +124,13 @@ var CameraPage = (function() {
       });
     }
 
-    // 診断ボタン
+    // 診断ボタン（ボタンフィードバック + 二重送信防止）
     var diagnoseBtn = document.getElementById('camera-diagnose-btn');
     if (diagnoseBtn) {
       diagnoseBtn.addEventListener('click', function() {
-        runDiagnosis();
+        if (diagnoseBtn.disabled) return;
+        var restore = App.btnLoading(diagnoseBtn, '写真を診断中...');
+        runDiagnosis(restore);
       });
     }
 
@@ -150,13 +152,14 @@ var CameraPage = (function() {
   }
 
   /** モック診断実行（2秒ローディング後に結果表示） */
-  function runDiagnosis() {
+  function runDiagnosis(restoreFn) {
     state.diagnosing = true;
     App.renderCurrentPage();
 
     setTimeout(function() {
       state.diagnosing = false;
       state.result = MOCK_DIAGNOSIS;
+      if (restoreFn) restoreFn(true);
       App.renderCurrentPage();
     }, 2000);
   }

@@ -179,6 +179,12 @@ var App = (function() {
     // PWAインストールプロンプト
     setupInstallPrompt();
 
+    // オフライン検知
+    setupOfflineDetection();
+
+    // Escでモーダルを閉じる
+    setupEscCloseModal();
+
     // ルーティング開始
     window.addEventListener('hashchange', navigate);
     navigate();
@@ -216,6 +222,51 @@ var App = (function() {
     resetSessionTimer();
     ['click', 'keydown', 'scroll', 'touchstart'].forEach(function(evt) {
       document.addEventListener(evt, resetSessionTimer, { passive: true });
+    });
+  }
+
+  // --- オフライン検知 → 通知バー表示 ---
+
+  function setupOfflineDetection() {
+    function showOfflineBar() {
+      if (document.getElementById('offline-bar')) return;
+      var bar = document.createElement('div');
+      bar.id = 'offline-bar';
+      bar.setAttribute('role', 'alert');
+      bar.setAttribute('aria-live', 'assertive');
+      bar.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#ef4444;color:#fff;text-align:center;padding:10px 16px;font-size:0.88rem;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,0.15);';
+      bar.textContent = 'インターネットに接続されていません。一部の機能が利用できない場合があります。';
+      document.body.prepend(bar);
+    }
+    function hideOfflineBar() {
+      var bar = document.getElementById('offline-bar');
+      if (bar) bar.remove();
+    }
+    window.addEventListener('offline', showOfflineBar);
+    window.addEventListener('online', function() {
+      hideOfflineBar();
+      toast('インターネットに再接続しました。');
+    });
+    if (!navigator.onLine) showOfflineBar();
+  }
+
+  // --- モーダルをEscキーで閉じる ---
+
+  function setupEscCloseModal() {
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        var overlay = document.querySelector('.modal-overlay');
+        if (overlay) overlay.remove();
+        // Stripe決済モーダルも閉じる
+        var stripeModal = document.getElementById('stripe-checkout-modal');
+        if (stripeModal) {
+          stripeModal.remove();
+          if (window._tsuchi_embedded_checkout) {
+            window._tsuchi_embedded_checkout.destroy();
+            window._tsuchi_embedded_checkout = null;
+          }
+        }
+      }
     });
   }
 

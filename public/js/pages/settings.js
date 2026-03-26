@@ -331,39 +331,60 @@ var SettingsPage = (function() {
       });
     }
 
-    // 解約ボタン
+    // 解約ボタン（ボタンフィードバック + 二重送信防止）
     var cancelBtn = document.getElementById('cancel-sub-btn');
     if (cancelBtn) {
       cancelBtn.addEventListener('click', function() {
         if (!confirm('プランを解約しますか？\n現在の請求期間が終了するまで引き続きご利用いただけます。')) return;
-        cancelBtn.disabled = true;
-        cancelBtn.textContent = '処理中...';
+        var restore = App.btnLoading(cancelBtn, '解約処理中...');
 
         TsuchiAPI.subscription.cancel()
-          .then(function(res) {
+          .then(function() {
+            restore(true);
             App.toast('解約を受け付けました。期間終了まで引き続きご利用いただけます。');
             loadPlanInfo();
           })
           .catch(function(err) {
+            restore(false);
             App.toast(err.error || '解約処理に失敗しました。通信状況を確認して、もう一度お試しください。', 'error');
-          })
-          .finally(function() {
-            cancelBtn.disabled = false;
-            cancelBtn.textContent = 'プランを解約する';
           });
       });
     }
 
-    // 通知トグル（localStorageで永続化）
+    // 通知トグル（localStorageで永続化 + キーボード操作対応）
     var toggle = document.getElementById('toggle-notify');
     if (toggle) {
-      toggle.addEventListener('click', function() {
+      toggle.setAttribute('role', 'switch');
+      toggle.setAttribute('tabindex', '0');
+      toggle.setAttribute('aria-checked', state.notifications ? 'true' : 'false');
+      toggle.setAttribute('aria-label', '朝の提案通知の切替');
+
+      function toggleNotify() {
         state.notifications = !state.notifications;
         localStorage.setItem('tsuchi_notifications', state.notifications ? '1' : '0');
-        this.classList.toggle('active');
+        toggle.classList.toggle('active');
+        toggle.setAttribute('aria-checked', state.notifications ? 'true' : 'false');
         App.toast(state.notifications ? '通知をオンにしました' : '通知をオフにしました');
+      }
+
+      toggle.addEventListener('click', toggleNotify);
+      toggle.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggleNotify();
+        }
       });
     }
+
+    // パスワードフィールドのエラークリア
+    ['current-pw', 'new-pw', 'confirm-pw'].forEach(function(id) {
+      var input = document.getElementById(id);
+      if (input) {
+        input.addEventListener('input', function() {
+          this.classList.remove('form-error');
+        });
+      }
+    });
 
     // PWAインストール
     var installBtn = document.getElementById('install-app-btn');
@@ -396,7 +417,7 @@ var SettingsPage = (function() {
       });
     }
 
-    // パスワード変更
+    // パスワード変更（ボタンフィードバック + 二重送信防止）
     var changePwBtn = document.getElementById('change-pw-btn');
     if (changePwBtn) {
       changePwBtn.addEventListener('click', function() {
@@ -404,16 +425,36 @@ var SettingsPage = (function() {
         var newPw = document.getElementById('new-pw').value;
         var confirmPw = document.getElementById('confirm-pw').value;
 
-        if (!currentPw) { App.toast('現在のパスワードを入力してください', 'error'); return; }
-        if (!newPw || newPw.length < 8) { App.toast('新しいパスワードは8文字以上で入力してください', 'error'); return; }
-        if (!/[a-zA-Z]/.test(newPw) || !/[0-9]/.test(newPw)) { App.toast('パスワードは英字と数字の両方を含めてください', 'error'); return; }
-        if (newPw !== confirmPw) { App.toast('新しいパスワードが一致しません', 'error'); return; }
+        if (!currentPw) {
+          App.toast('現在のパスワードを入力してください。', 'error');
+          document.getElementById('current-pw').classList.add('form-error');
+          document.getElementById('current-pw').focus();
+          return;
+        }
+        if (!newPw || newPw.length < 8) {
+          App.toast('新しいパスワードは8文字以上で入力してください。', 'error');
+          document.getElementById('new-pw').classList.add('form-error');
+          document.getElementById('new-pw').focus();
+          return;
+        }
+        if (!/[a-zA-Z]/.test(newPw) || !/[0-9]/.test(newPw)) {
+          App.toast('パスワードは英字と数字の両方を含めてください。', 'error');
+          document.getElementById('new-pw').classList.add('form-error');
+          document.getElementById('new-pw').focus();
+          return;
+        }
+        if (newPw !== confirmPw) {
+          App.toast('新しいパスワードが一致しません。確認用のパスワードを再入力してください。', 'error');
+          document.getElementById('confirm-pw').classList.add('form-error');
+          document.getElementById('confirm-pw').focus();
+          return;
+        }
 
-        changePwBtn.disabled = true;
-        changePwBtn.textContent = '変更中...';
+        var restore = App.btnLoading(changePwBtn, 'パスワードを変更中...');
 
         TsuchiAPI.auth.changePassword(currentPw, newPw)
           .then(function() {
+            restore(true);
             App.toast('パスワードを変更しました');
             document.getElementById('current-pw').value = '';
             document.getElementById('new-pw').value = '';
@@ -422,11 +463,8 @@ var SettingsPage = (function() {
             if (el) { el.textContent = '8文字以上、英字と数字を含めてください'; el.style.color = '#6b7280'; }
           })
           .catch(function(err) {
-            App.toast(err.error || 'パスワード変更に失敗しました', 'error');
-          })
-          .finally(function() {
-            changePwBtn.disabled = false;
-            changePwBtn.textContent = 'パスワードを変更';
+            restore(false);
+            App.toast(err.error || 'パスワード変更に失敗しました。現在のパスワードが正しいか確認してください。', 'error');
           });
       });
     }
@@ -443,7 +481,7 @@ var SettingsPage = (function() {
       });
     }
 
-    // アカウント削除
+    // アカウント削除（ボタンフィードバック + 二重送信防止）
     var deleteBtn = document.getElementById('delete-account-btn');
     if (deleteBtn) {
       deleteBtn.addEventListener('click', function() {
@@ -451,22 +489,19 @@ var SettingsPage = (function() {
         if (!pw) return;
         if (!confirm('本当にアカウントを削除しますか？\nすべてのデータが完全に削除されます。')) return;
 
-        deleteBtn.disabled = true;
-        deleteBtn.textContent = '削除中...';
+        var restore = App.btnLoading(deleteBtn, 'アカウント削除中...');
 
         TsuchiAPI.auth.deleteAccount(pw)
           .then(function() {
+            restore(true);
             localStorage.removeItem('tsuchi_token');
             localStorage.removeItem('tsuchi_user');
             App.toast('アカウントを削除しました。ご利用ありがとうございました。');
             window.location.hash = '#/login';
           })
           .catch(function(err) {
-            App.toast(err.error || 'アカウント削除に失敗しました', 'error');
-          })
-          .finally(function() {
-            deleteBtn.disabled = false;
-            deleteBtn.textContent = 'アカウントを削除する';
+            restore(false);
+            App.toast(err.error || 'アカウント削除に失敗しました。パスワードが正しいか確認してください。', 'error');
           });
       });
     }

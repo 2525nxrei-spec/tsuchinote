@@ -40,7 +40,7 @@ var LandingPage = (function() {
               '家庭菜園のことは、ツチノートひとつで。' +
             '</p>' +
             '<div class="lp-hero__cta">' +
-              '<a href="#/register" class="btn btn-primary btn-lg">無料ではじめる</a>' +
+              '<a href="#/register" class="btn btn-primary btn-lg" aria-label="無料で新規登録する">無料ではじめる</a>' +
             '</div>' +
             '<p class="lp-hero__note">カード登録なし・すぐ使えます</p>' +
           '</div>' +
@@ -207,6 +207,12 @@ var LandingPage = (function() {
 
         '<div class="lp-footer">' +
           '<p>ツチノート — 濱田礼</p>' +
+          '<div style="margin-top:8px;display:flex;justify-content:center;gap:16px;flex-wrap:wrap;">' +
+            '<a href="terms.html" style="color:var(--text-light);font-size:0.75rem;">利用規約</a>' +
+            '<a href="privacy.html" style="color:var(--text-light);font-size:0.75rem;">プライバシーポリシー</a>' +
+            '<a href="legal.html" style="color:var(--text-light);font-size:0.75rem;">特定商取引法に基づく表記</a>' +
+            '<a href="contact.html" style="color:var(--text-light);font-size:0.75rem;">お問い合わせ</a>' +
+          '</div>' +
         '</div>' +
 
       '</div>';

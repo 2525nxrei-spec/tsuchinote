@@ -40,9 +40,9 @@ var RecordPage = (function() {
 
     var html = '<div class="calendar">' +
       '<div class="calendar-header">' +
-        '<button class="calendar-nav" id="cal-prev">&lt;</button>' +
+        '<button class="calendar-nav" id="cal-prev" aria-label="前の月へ">&lt;</button>' +
         '<div class="calendar-title">' + title + '</div>' +
-        '<button class="calendar-nav" id="cal-next">&gt;</button>' +
+        '<button class="calendar-nav" id="cal-next" aria-label="次の月へ">&gt;</button>' +
       '</div>' +
       '<div class="calendar-grid">';
 
@@ -126,7 +126,7 @@ var RecordPage = (function() {
       '</div>' +
       renderCalendar() +
       '<div class="mb-16">' +
-        '<select class="form-input" id="record-farm-filter">' + farmOptions + '</select>' +
+        '<select class="form-input" id="record-farm-filter" aria-label="畑でフィルタリング">' + farmOptions + '</select>' +
       '</div>' +
       '<div id="record-list">' + renderRecordList() + '</div>' +
     '</div>';
@@ -146,21 +146,24 @@ var RecordPage = (function() {
 
     var overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-label', '作業を記録');
     overlay.innerHTML =
       '<div class="modal">' +
-        '<div class="modal-title">作業を記録 <button class="modal-close" id="close-record-modal">&times;</button></div>' +
+        '<div class="modal-title">作業を記録 <button class="modal-close" id="close-record-modal" aria-label="閉じる">&times;</button></div>' +
         '<form id="record-form">' +
           '<div class="form-group">' +
-            '<label class="form-label">日付</label>' +
-            '<input class="form-input" type="date" id="rec-date" value="' + fmtDate(new Date()) + '" required>' +
+            '<label class="form-label" for="rec-date">日付</label>' +
+            '<input class="form-input" type="date" id="rec-date" value="' + fmtDate(new Date()) + '" required aria-required="true">' +
           '</div>' +
           '<div class="form-group">' +
-            '<label class="form-label">畑</label>' +
-            '<select class="form-input" id="rec-farm" required>' + farmOptions + '</select>' +
+            '<label class="form-label" for="rec-farm">畑</label>' +
+            '<select class="form-input" id="rec-farm" required aria-required="true">' + farmOptions + '</select>' +
           '</div>' +
           '<div class="form-group">' +
-            '<label class="form-label">作業内容</label>' +
-            '<textarea class="form-input" id="rec-content" placeholder="例: トマトに水やり、支柱を立て直した" required></textarea>' +
+            '<label class="form-label" for="rec-content">作業内容</label>' +
+            '<textarea class="form-input" id="rec-content" placeholder="例: トマトに水やり、支柱を立て直した" required aria-required="true"></textarea>' +
           '</div>' +
           '<button type="submit" class="btn btn-primary btn-block mt-16">記録する</button>' +
         '</form>' +
@@ -170,6 +173,10 @@ var RecordPage = (function() {
 
     document.getElementById('close-record-modal').addEventListener('click', function() { overlay.remove(); });
     overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+
+    // モーダル内にフォーカスを移動
+    var recContent = document.getElementById('rec-content');
+    if (recContent) setTimeout(function() { recContent.focus(); }, 100);
 
     App.guardSubmit(document.getElementById('record-form'), function() {
       var farmId = document.getElementById('rec-farm').value;

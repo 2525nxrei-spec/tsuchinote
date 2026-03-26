@@ -87,6 +87,7 @@ export async function onRequestPost(context) {
       session_id: session.id,
     });
   } catch (err) {
-    return errorResponse(err.message, 400);
+    console.error('Checkoutエラー:', err.message);
+    return errorResponse('決済セッションの作成に失敗しました', 500);
   }
 }

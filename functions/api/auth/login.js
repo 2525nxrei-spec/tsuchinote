@@ -19,10 +19,13 @@ export async function onRequestPost(context) {
     return errorResponse('email と password は必須です');
   }
 
+  // メールアドレス正規化
+  const emailLower = email.toLowerCase().trim();
+
   // ユーザー検索
   const user = await env.DB.prepare(
     'SELECT id, email, password_hash, salt, name, plan FROM users WHERE email = ?'
-  ).bind(email).first();
+  ).bind(emailLower).first();
 
   if (!user) {
     return errorResponse('メールアドレスまたはパスワードが正しくありません', 401);
@@ -43,7 +46,7 @@ export async function onRequestPost(context) {
     sub: user.id,
     email: user.email,
     plan: user.plan,
-    exp: now + 60 * 60 * 24 * 7,
+    exp: now + 60 * 60 * 24,
   }, secret);
 
   return jsonResponse({

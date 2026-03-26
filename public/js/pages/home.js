@@ -141,7 +141,7 @@ var HomePage = (function() {
         '<!-- 畑セレクター -->' +
         (farms.length > 1 ?
           '<div class="farm-selector">' +
-            '<select class="form-input" id="farm-select">' + farmOptions + '</select>' +
+            '<select class="form-input" id="farm-select" aria-label="表示する畑を選択">' + farmOptions + '</select>' +
           '</div>' : '') +
         '<!-- 天気カード -->' +
         '<div class="weather-card">' +
@@ -168,11 +168,11 @@ var HomePage = (function() {
           '<div class="suggestion-list" id="suggestion-list">' + suggestHtml + '</div>' +
         '</div>' +
         '<!-- 畑を撮影するボタン -->' +
-        '<a href="#/camera" class="btn btn-secondary btn-block mt-16">' +
+        '<a href="#/camera" class="btn btn-secondary btn-block mt-16" aria-label="カメラで畑を撮影して診断する">' +
           '畑を撮影する' +
         '</a>' +
         '<!-- 作業記録ボタン -->' +
-        '<a href="#/record" class="btn btn-primary btn-block mt-16">' +
+        '<a href="#/record" class="btn btn-primary btn-block mt-16" aria-label="作業記録画面へ移動する">' +
           '作業を記録する' +
         '</a>' +
       '</div>';

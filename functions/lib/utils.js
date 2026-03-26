@@ -23,18 +23,46 @@ export function generateUlid() {
   return id;
 }
 
-/** SHA-256 パスワードハッシュ */
+/** PBKDF2 SHA-256 パスワードハッシュ（100,000回イテレーション） */
 export async function hashPassword(password, salt) {
   const enc = new TextEncoder();
-  const data = enc.encode(salt + password);
-  const buf = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']
+  );
+  const derivedBits = await crypto.subtle.deriveBits(
+    { name: 'PBKDF2', salt: enc.encode(salt), iterations: 100000, hash: 'SHA-256' },
+    keyMaterial, 256
+  );
+  return Array.from(new Uint8Array(derivedBits)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-/** パスワード検証 */
+/** 旧方式SHA-256ハッシュ（互換用） */
+async function hashPasswordLegacy(password, salt) {
+  const enc = new TextEncoder();
+  const data = enc.encode(password + salt);
+  const hashBuf = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+/** パスワード検証（タイミングセーフ比較、旧SHA-256互換モード付き） */
 export async function verifyPassword(password, hash, salt) {
+  // まずPBKDF2で検証
   const computed = await hashPassword(password, salt);
-  return computed === hash;
+  if (computed.length === hash.length) {
+    let result = 0;
+    for (let i = 0; i < computed.length; i++) {
+      result |= computed.charCodeAt(i) ^ hash.charCodeAt(i);
+    }
+    if (result === 0) return true;
+  }
+  // PBKDF2で不一致の場合、旧SHA-256方式で検証（既存ユーザー互換）
+  const legacy = await hashPasswordLegacy(password, salt);
+  if (legacy.length !== hash.length) return false;
+  let legacyResult = 0;
+  for (let i = 0; i < legacy.length; i++) {
+    legacyResult |= legacy.charCodeAt(i) ^ hash.charCodeAt(i);
+  }
+  return legacyResult === 0;
 }
 
 /** JWT生成 (HS256) */

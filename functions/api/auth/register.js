@@ -30,12 +30,18 @@ export async function onRequestPost(context) {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return errorResponse('メールアドレスの形式が正しくありません');
   }
-  if (password.length < 6) {
-    return errorResponse('パスワードは6文字以上にしてください');
+  if (password.length < 8) {
+    return errorResponse('パスワードは8文字以上にしてください');
+  }
+  if (name.length > 50) {
+    return errorResponse('表示名は50文字以内にしてください');
   }
 
+  // メールアドレス正規化
+  const emailLower = email.toLowerCase().trim();
+
   // 重複チェック
-  const existing = await env.DB.prepare('SELECT id FROM users WHERE email = ?').bind(email).first();
+  const existing = await env.DB.prepare('SELECT id FROM users WHERE email = ?').bind(emailLower).first();
   if (existing) {
     return errorResponse('このメールアドレスは既に登録されています', 409);
   }
@@ -49,9 +55,9 @@ export async function onRequestPost(context) {
   await env.DB.prepare(
     `INSERT INTO users (id, email, password_hash, salt, name, plan, created_at, updated_at)
      VALUES (?, ?, ?, ?, ?, 'free', ?, ?)`
-  ).bind(id, email, passwordHash, salt, name, now, now).run();
+  ).bind(id, emailLower, passwordHash, salt, name, now, now).run();
 
-  const user = { id, email, name, plan: 'free' };
+  const user = { id, email: emailLower, name, plan: 'free' };
   if (!env.JWT_SECRET) {
     return errorResponse('サーバー設定エラー: JWT_SECRETが未設定です', 500);
   }
@@ -61,7 +67,7 @@ export async function onRequestPost(context) {
     sub: user.id,
     email: user.email,
     plan: user.plan,
-    exp: jwtNow + 60 * 60 * 24 * 7,
+    exp: jwtNow + 60 * 60 * 24,
   }, secret);
 
   return jsonResponse({ token, user }, 201);

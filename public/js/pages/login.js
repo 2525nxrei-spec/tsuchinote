@@ -61,23 +61,33 @@ var LoginPage = (function() {
     var loginForm = document.getElementById('login-form');
     var registerForm = document.getElementById('register-form');
 
-    // タブ切り替え（aria-selected 連動）
-    tabs.forEach(function(tab) {
-      tab.addEventListener('click', function() {
-        tabs.forEach(function(t) {
-          t.classList.remove('active');
-          t.setAttribute('aria-selected', 'false');
-        });
-        tab.classList.add('active');
-        tab.setAttribute('aria-selected', 'true');
-        if (tab.dataset.tab === 'login') {
-          loginForm.style.display = '';
-          registerForm.style.display = 'none';
-          loginForm.querySelector('input').focus();
-        } else {
-          loginForm.style.display = 'none';
-          registerForm.style.display = '';
-          registerForm.querySelector('input').focus();
+    // タブ切り替え（aria-selected 連動 + 左右キーナビゲーション）
+    function switchTab(tab) {
+      tabs.forEach(function(t) {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+        t.setAttribute('tabindex', '-1');
+      });
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
+      tab.setAttribute('tabindex', '0');
+      tab.focus();
+      if (tab.dataset.tab === 'login') {
+        loginForm.style.display = '';
+        registerForm.style.display = 'none';
+      } else {
+        loginForm.style.display = 'none';
+        registerForm.style.display = '';
+      }
+    }
+
+    tabs.forEach(function(tab, idx) {
+      tab.addEventListener('click', function() { switchTab(tab); });
+      tab.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+          e.preventDefault();
+          var nextIdx = e.key === 'ArrowRight' ? (idx + 1) % tabs.length : (idx - 1 + tabs.length) % tabs.length;
+          switchTab(tabs[nextIdx]);
         }
       });
     });
@@ -166,6 +176,12 @@ var LoginPage = (function() {
           throw err;
         });
     });
+
+    // URLが#/registerなら登録タブを表示
+    if (window.location.hash === '#/register') {
+      var regTab = document.querySelector('.login-tab[data-tab="register"]');
+      if (regTab) switchTab(regTab);
+    }
 
     // 入力時にエラー表示をクリア
     var inputs = document.querySelectorAll('.form-input');

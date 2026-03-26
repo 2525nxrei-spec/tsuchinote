@@ -63,6 +63,7 @@ export async function onRequestGet(context) {
 
     return jsonResponse(result);
   } catch (err) {
-    return errorResponse(err.message, 400);
+    console.error('ステータス取得エラー:', err.message);
+    return errorResponse('サブスクリプション情報の取得に失敗しました', 500);
   }
 }
