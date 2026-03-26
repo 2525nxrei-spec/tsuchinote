@@ -200,9 +200,37 @@ var SettingsPage = (function() {
         '</div>' +
       '</div>' +
 
+      // パスワード変更
+      '<div class="settings-section">' +
+        '<div class="settings-section-title">セキュリティ</div>' +
+        '<div id="password-change-area">' +
+          '<div class="form-group">' +
+            '<label class="form-label" for="current-pw">現在のパスワード</label>' +
+            '<input class="form-input" type="password" id="current-pw" autocomplete="current-password">' +
+          '</div>' +
+          '<div class="form-group" style="margin-top:8px;">' +
+            '<label class="form-label" for="new-pw">新しいパスワード</label>' +
+            '<input class="form-input" type="password" id="new-pw" autocomplete="new-password" minlength="8">' +
+            '<div style="font-size:0.75rem;color:#6b7280;margin-top:4px;" id="pw-strength">8文字以上、英字と数字を含めてください</div>' +
+          '</div>' +
+          '<div class="form-group" style="margin-top:8px;">' +
+            '<label class="form-label" for="confirm-pw">新しいパスワード（確認）</label>' +
+            '<input class="form-input" type="password" id="confirm-pw" autocomplete="new-password">' +
+          '</div>' +
+          '<button class="btn btn-primary btn-block" id="change-pw-btn" style="margin-top:12px;">パスワードを変更</button>' +
+        '</div>' +
+      '</div>' +
+
       // ログアウト
       '<div class="settings-section">' +
         '<button class="btn btn-danger btn-block" id="logout-btn">ログアウト</button>' +
+      '</div>' +
+
+      // アカウント削除（危険ゾーン）
+      '<div class="settings-section" style="border:1px solid #fecaca;border-radius:12px;padding:16px;">' +
+        '<div class="settings-section-title" style="color:#dc2626;">アカウント削除</div>' +
+        '<div style="font-size:0.85rem;color:#6b7280;">アカウントを削除すると、すべてのデータが完全に削除されます。この操作は取り消せません。</div>' +
+        '<button class="btn btn-outline btn-block" id="delete-account-btn" style="margin-top:12px;color:#dc2626;border-color:#fecaca;">アカウントを削除する</button>' +
       '</div>' +
 
       // アプリ情報
@@ -212,7 +240,17 @@ var SettingsPage = (function() {
     '</div>';
   }
 
-  /** チェックアウトへ遷移 */
+  /** Embedded Checkout モーダルを閉じる */
+  function closeCheckoutModal() {
+    var modal = document.getElementById('stripe-checkout-modal');
+    if (modal) modal.remove();
+    if (window._tsuchi_embedded_checkout) {
+      window._tsuchi_embedded_checkout.destroy();
+      window._tsuchi_embedded_checkout = null;
+    }
+  }
+
+  /** チェックアウト（Embedded Checkout方式） */
   function startCheckout(planId) {
     var btn = document.getElementById('select-' + planId);
     if (btn) {
@@ -222,14 +260,50 @@ var SettingsPage = (function() {
 
     TsuchiAPI.subscription.createCheckout(planId)
       .then(function(res) {
-        if (res.data && res.data.url) {
-          window.location.href = res.data.url;
+        if (res.data && res.data.mock) {
+          // モックモード: 即座に成功扱い
+          App.toast('（テスト）決済が完了しました。', 'success');
+          loadPlanInfo();
+          return;
+        }
+        if (res.data && res.data.clientSecret) {
+          // Stripe公開鍵を取得してEmbedded Checkoutを表示
+          return fetch('/api/subscription/stripe-key')
+            .then(function(r) { return r.json(); })
+            .then(function(keyData) {
+              if (!keyData.publishableKey) {
+                throw new Error('Stripe公開鍵が取得できませんでした');
+              }
+              var stripe = Stripe(keyData.publishableKey);
+
+              // モーダルを作成
+              var modal = document.createElement('div');
+              modal.id = 'stripe-checkout-modal';
+              modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:10000;display:flex;align-items:center;justify-content:center;padding:16px;';
+              modal.innerHTML = '<div style="background:#fff;border-radius:12px;width:100%;max-width:500px;max-height:90vh;overflow:auto;position:relative;">' +
+                '<button id="stripe-checkout-close" style="position:absolute;top:12px;right:12px;background:none;border:none;font-size:24px;cursor:pointer;color:#666;z-index:1;">&times;</button>' +
+                '<div id="stripe-checkout-container" style="padding:16px;"></div>' +
+              '</div>';
+              document.body.appendChild(modal);
+
+              // 閉じるボタン
+              document.getElementById('stripe-checkout-close').addEventListener('click', closeCheckoutModal);
+              // オーバーレイクリックで閉じる
+              modal.addEventListener('click', function(e) { if (e.target === modal) closeCheckoutModal(); });
+
+              // Embedded Checkoutをマウント
+              return stripe.initEmbeddedCheckout({ clientSecret: res.data.clientSecret })
+                .then(function(checkout) {
+                  window._tsuchi_embedded_checkout = checkout;
+                  checkout.mount('#stripe-checkout-container');
+                });
+            });
         } else {
           App.toast('決済ページの準備中です。', 'warning');
         }
       })
       .catch(function(err) {
-        App.toast(err.error || '決済ページを開けませんでした。通信状況を確認して、もう一度お試しください。', 'error');
+        App.toast(err.error || err.message || '決済ページを開けませんでした。通信状況を確認して、もう一度お試しください。', 'error');
       })
       .finally(function() {
         if (btn) {
@@ -299,6 +373,64 @@ var SettingsPage = (function() {
       });
     }
 
+    // パスワード強度チェック（リアルタイム）
+    var newPwInput = document.getElementById('new-pw');
+    if (newPwInput) {
+      newPwInput.addEventListener('input', function() {
+        var pw = this.value;
+        var el = document.getElementById('pw-strength');
+        if (!el) return;
+        if (pw.length === 0) {
+          el.textContent = '8文字以上、英字と数字を含めてください';
+          el.style.color = '#6b7280';
+        } else if (pw.length < 8) {
+          el.textContent = 'あと' + (8 - pw.length) + '文字必要です';
+          el.style.color = '#dc2626';
+        } else if (!/[a-zA-Z]/.test(pw) || !/[0-9]/.test(pw)) {
+          el.textContent = '英字と数字の両方を含めてください';
+          el.style.color = '#d97706';
+        } else {
+          el.textContent = 'パスワード強度: OK';
+          el.style.color = '#16a34a';
+        }
+      });
+    }
+
+    // パスワード変更
+    var changePwBtn = document.getElementById('change-pw-btn');
+    if (changePwBtn) {
+      changePwBtn.addEventListener('click', function() {
+        var currentPw = document.getElementById('current-pw').value;
+        var newPw = document.getElementById('new-pw').value;
+        var confirmPw = document.getElementById('confirm-pw').value;
+
+        if (!currentPw) { App.toast('現在のパスワードを入力してください', 'error'); return; }
+        if (!newPw || newPw.length < 8) { App.toast('新しいパスワードは8文字以上で入力してください', 'error'); return; }
+        if (!/[a-zA-Z]/.test(newPw) || !/[0-9]/.test(newPw)) { App.toast('パスワードは英字と数字の両方を含めてください', 'error'); return; }
+        if (newPw !== confirmPw) { App.toast('新しいパスワードが一致しません', 'error'); return; }
+
+        changePwBtn.disabled = true;
+        changePwBtn.textContent = '変更中...';
+
+        TsuchiAPI.auth.changePassword(currentPw, newPw)
+          .then(function() {
+            App.toast('パスワードを変更しました');
+            document.getElementById('current-pw').value = '';
+            document.getElementById('new-pw').value = '';
+            document.getElementById('confirm-pw').value = '';
+            var el = document.getElementById('pw-strength');
+            if (el) { el.textContent = '8文字以上、英字と数字を含めてください'; el.style.color = '#6b7280'; }
+          })
+          .catch(function(err) {
+            App.toast(err.error || 'パスワード変更に失敗しました', 'error');
+          })
+          .finally(function() {
+            changePwBtn.disabled = false;
+            changePwBtn.textContent = 'パスワードを変更';
+          });
+      });
+    }
+
     // ログアウト
     var logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
@@ -308,6 +440,34 @@ var SettingsPage = (function() {
         localStorage.removeItem('tsuchi_user');
         App.toast('ログアウトしました');
         window.location.hash = '#/login';
+      });
+    }
+
+    // アカウント削除
+    var deleteBtn = document.getElementById('delete-account-btn');
+    if (deleteBtn) {
+      deleteBtn.addEventListener('click', function() {
+        var pw = prompt('アカウントを削除するには、パスワードを入力してください。\nこの操作は取り消せません。');
+        if (!pw) return;
+        if (!confirm('本当にアカウントを削除しますか？\nすべてのデータが完全に削除されます。')) return;
+
+        deleteBtn.disabled = true;
+        deleteBtn.textContent = '削除中...';
+
+        TsuchiAPI.auth.deleteAccount(pw)
+          .then(function() {
+            localStorage.removeItem('tsuchi_token');
+            localStorage.removeItem('tsuchi_user');
+            App.toast('アカウントを削除しました。ご利用ありがとうございました。');
+            window.location.hash = '#/login';
+          })
+          .catch(function(err) {
+            App.toast(err.error || 'アカウント削除に失敗しました', 'error');
+          })
+          .finally(function() {
+            deleteBtn.disabled = false;
+            deleteBtn.textContent = 'アカウントを削除する';
+          });
       });
     }
   }

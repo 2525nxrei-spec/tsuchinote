@@ -37,9 +37,9 @@ export async function onRequestPost(context) {
     // モックモード
     if (isMockMode(env)) {
       return jsonResponse({
-        url: '/#/settings?payment=mock_success',
+        clientSecret: 'mock_client_secret_123',
         session_id: 'mock_session_123',
-        payment_methods: ['card', 'paypay', 'apple_pay', 'google_pay'],
+        mock: true,
       });
     }
 
@@ -61,14 +61,13 @@ export async function onRequestPost(context) {
       throw new Error(`Stripe Price IDが設定されていません: ${PLAN_MAP[planId]}`);
     }
 
-    // payment_method_types を指定しない → Stripeダッシュボードで有効化した決済方法が全て自動表示
-    // （card=クレカ/Apple Pay/Google Pay、paypay、konbini 等）
+    // Embedded Checkout: ページ内埋め込み決済（リダイレクトなし）
     const params = {
       'mode': 'subscription',
+      'ui_mode': 'embedded',
       'line_items[0][price]': priceId,
       'line_items[0][quantity]': '1',
-      'success_url': `${appUrl}/#/settings?payment=success`,
-      'cancel_url': `${appUrl}/#/settings?payment=cancel`,
+      'return_url': `${appUrl}/#/settings?payment=success&session_id={CHECKOUT_SESSION_ID}`,
       'client_reference_id': userId,
       'locale': 'ja',
       'metadata[user_id]': userId,
@@ -84,7 +83,7 @@ export async function onRequestPost(context) {
     const session = await stripeRequest('/checkout/sessions', 'POST', params, env);
 
     return jsonResponse({
-      url: session.url,
+      clientSecret: session.client_secret,
       session_id: session.id,
     });
   } catch (err) {
