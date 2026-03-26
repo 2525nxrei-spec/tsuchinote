@@ -17,7 +17,7 @@
   <script>
     // 古いService Workerキャッシュを自動クリア
     (function() {
-      var TARGET = 'tsuchinote-v5';
+      var TARGET = 'tsuchinote-v6';
       if (navigator.serviceWorker) {
         caches.keys().then(function(keys) {
           var stale = keys.filter(function(k) { return k !== TARGET; });

@@ -1,6 +1,6 @@
 // ツチノート Service Worker
 // キャッシュバージョン（更新時にインクリメント）
-var CACHE_VERSION = 'tsuchinote-v5';
+var CACHE_VERSION = 'tsuchinote-v6';
 
 // 静的アセット（キャッシュファースト）
 var STATIC_ASSETS = [

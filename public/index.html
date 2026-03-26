@@ -12,7 +12,7 @@
   <link rel="apple-touch-icon" href="/icons/icon-192.svg">
   <script>
     (function() {
-      var TARGET = 'tsuchinote-v5';
+      var TARGET = 'tsuchinote-v6';
       if (navigator.serviceWorker) {
         caches.keys().then(function(keys) {
           var stale = keys.filter(function(k) { return k !== TARGET; });
@@ -368,6 +368,22 @@
       .footer__inner { grid-template-columns: 1fr; gap: 20px; }
       .footer__bottom { flex-direction: column; text-align: center; }
       .footer__legal { justify-content: center; }
+      .section { padding: 56px 0; }
+      .container { padding: 0 20px; }
+    }
+
+    @media (max-width: 480px) {
+      .hero { padding: 80px 0 40px; }
+      .container { padding: 0 16px; }
+      .section { padding: 40px 0; }
+      .section__lead { font-size: 0.88rem; }
+      .pricing-grid { grid-template-columns: 1fr; }
+      .voice-item { padding: 20px 16px; }
+      .faq-q { font-size: 0.88rem; padding: 14px 0; }
+      .cta-end { padding: 48px 0; }
+      .how-item { gap: 14px; }
+      .how-num { width: 36px; height: 36px; font-size: 1rem; }
+      .btn--lg { padding: 12px 24px; font-size: 1rem; }
     }
 
     @media (min-width: 769px) {
