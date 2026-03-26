@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2d6a4f"/>
+      <stop offset="100%" stop-color="#1b4332"/>
+    </linearGradient>
+  </defs>
+  <!-- 背景 -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <!-- 装飾の円 -->
+  <circle cx="100" cy="530" r="200" fill="#40916c" opacity="0.15"/>
+  <circle cx="1100" cy="100" r="250" fill="#40916c" opacity="0.1"/>
+  <!-- 芽のアイコン -->
+  <g transform="translate(600, 200)" text-anchor="middle">
+    <!-- 茎 -->
+    <line x1="0" y1="20" x2="0" y2="70" stroke="#b7e4c7" stroke-width="6" stroke-linecap="round"/>
+    <!-- 左の葉 -->
+    <ellipse cx="-22" cy="10" rx="22" ry="12" fill="#95d5b2" transform="rotate(-35, -22, 10)"/>
+    <!-- 右の葉 -->
+    <ellipse cx="22" cy="10" rx="22" ry="12" fill="#b7e4c7" transform="rotate(35, 22, 10)"/>
+    <!-- 種 -->
+    <ellipse cx="0" cy="75" rx="14" ry="10" fill="#74c69d"/>
+  </g>
+  <!-- サービス名 -->
+  <text x="600" y="340" text-anchor="middle" font-family="'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif" font-size="80" font-weight="bold" fill="#ffffff" letter-spacing="8">ツチノート</text>
+  <!-- キャッチコピー -->
+  <text x="600" y="410" text-anchor="middle" font-family="'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif" font-size="30" fill="#b7e4c7">畑の天気と今日やること、毎朝届けます</text>
+  <!-- 下部ライン -->
+  <rect x="500" y="460" width="200" height="3" rx="2" fill="#b7e4c7" opacity="0.5"/>
+  <!-- 会社名 -->
+  <text x="600" y="560" text-anchor="middle" font-family="'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif" font-size="18" fill="#b7e4c7" opacity="0.6">株式会社 礼</text>
+</svg>
