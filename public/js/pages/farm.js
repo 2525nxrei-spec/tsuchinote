@@ -196,11 +196,14 @@ var FarmPage = (function() {
     // モーダル表示と同時に自動取得を開始
     fetchGeolocation();
 
-    // 送信
-    document.getElementById('farm-form').addEventListener('submit', function(e) {
-      e.preventDefault();
+    // 送信（二重送信防止）
+    App.guardSubmit(document.getElementById('farm-form'), function() {
       var name = document.getElementById('farm-name').value.trim();
-      if (!name) return;
+      if (!name) {
+        App.toast('畑の名前を入力してください。', 'warning');
+        document.getElementById('farm-name').focus();
+        return Promise.reject();
+      }
 
       var data = {
         name: name,
@@ -209,14 +212,15 @@ var FarmPage = (function() {
         longitude: parseFloat(document.getElementById('farm-lon').value) || null
       };
 
-      TsuchiAPI.farm.create(data)
+      return TsuchiAPI.farm.create(data)
         .then(function() {
           App.toast('畑を追加しました！');
           closeModal();
           loadFarms();
         })
         .catch(function(err) {
-          App.toast(err.error || '追加に失敗しました。', 'error');
+          App.toast(err.error || '畑の追加に失敗しました。通信状況を確認してください。', 'error');
+          throw err;
         });
     });
   }
@@ -256,10 +260,13 @@ var FarmPage = (function() {
     document.getElementById('close-crop-modal').addEventListener('click', closeModal);
     overlay.addEventListener('click', function(e) { if (e.target === overlay) closeModal(); });
 
-    document.getElementById('crop-form').addEventListener('submit', function(e) {
-      e.preventDefault();
+    App.guardSubmit(document.getElementById('crop-form'), function() {
       var cropType = document.getElementById('crop-type').value;
-      if (!cropType) { App.toast('品目を選択してください。', 'warning'); return; }
+      if (!cropType) {
+        App.toast('品目を選択してください。', 'warning');
+        document.getElementById('crop-type').focus();
+        return Promise.reject();
+      }
 
       var data = {
         name: cropType,
@@ -267,14 +274,15 @@ var FarmPage = (function() {
         memo: document.getElementById('crop-memo').value.trim()
       };
 
-      TsuchiAPI.crop.create(state.selectedFarm.id, data)
+      return TsuchiAPI.crop.create(state.selectedFarm.id, data)
         .then(function() {
           App.toast(cropType + 'を追加しました！');
           closeModal();
           loadCrops(state.selectedFarm.id);
         })
         .catch(function(err) {
-          App.toast(err.error || '追加に失敗しました。', 'error');
+          App.toast(err.error || '作物の追加に失敗しました。通信状況を確認してください。', 'error');
+          throw err;
         });
     });
   }

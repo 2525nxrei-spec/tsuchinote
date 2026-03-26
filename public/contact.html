@@ -76,6 +76,17 @@
     .contact-email:hover {
       background: #1b4332;
     }
+    .contact-email:active {
+      transform: scale(0.97);
+    }
+    .contact-email:focus-visible {
+      outline: 3px solid #2d6a4f;
+      outline-offset: 2px;
+    }
+    a:focus-visible {
+      outline: 3px solid #2d6a4f;
+      outline-offset: 2px;
+    }
     .note {
       font-size: 13px;
       color: #6b7c72;
@@ -122,7 +133,7 @@
 
     <div class="contact-box">
       <p>メールでのお問い合わせ</p>
-      <a href="mailto:2525nxrei@gmail.com" class="contact-email">2525nxrei@gmail.com</a>
+      <a href="mailto:2525nxrei@gmail.com" class="contact-email" aria-label="メールで問い合わせる: 2525nxrei@gmail.com">2525nxrei@gmail.com</a>
     </div>
 
     <ul class="note">

@@ -171,24 +171,28 @@ var RecordPage = (function() {
     document.getElementById('close-record-modal').addEventListener('click', function() { overlay.remove(); });
     overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
 
-    document.getElementById('record-form').addEventListener('submit', function(e) {
-      e.preventDefault();
+    App.guardSubmit(document.getElementById('record-form'), function() {
       var farmId = document.getElementById('rec-farm').value;
       var data = {
         date: document.getElementById('rec-date').value,
         content: document.getElementById('rec-content').value.trim()
       };
 
-      if (!data.content) { App.toast('作業内容を入力してください。', 'warning'); return; }
+      if (!data.content) {
+        App.toast('作業内容を入力してください。', 'warning');
+        document.getElementById('rec-content').focus();
+        return Promise.reject();
+      }
 
-      TsuchiAPI.record.create(farmId, data)
+      return TsuchiAPI.record.create(farmId, data)
         .then(function() {
           App.toast('記録しました！');
           overlay.remove();
           loadRecords();
         })
         .catch(function(err) {
-          App.toast(err.error || '記録に失敗しました。', 'error');
+          App.toast(err.error || '記録の保存に失敗しました。通信状況を確認してください。', 'error');
+          throw err;
         });
     });
   }
@@ -245,23 +249,41 @@ var RecordPage = (function() {
       });
     }
 
-    // 記録の完了チェック
+    // 記録の完了チェック（アクセシビリティ + 二重送信防止）
     var checks = document.querySelectorAll('.record-check');
     checks.forEach(function(el) {
-      el.addEventListener('click', function() {
-        var recordId = this.dataset.id;
-        var farmId = this.dataset.farm;
-        var checkEl = this;
+      el.setAttribute('role', 'checkbox');
+      el.setAttribute('tabindex', '0');
+      el.setAttribute('aria-checked', el.classList.contains('checked') ? 'true' : 'false');
+      el.setAttribute('aria-label', '作業を完了としてマーク');
+
+      var processing = false;
+      function handleCheck(checkEl) {
+        if (processing) return;
+        processing = true;
+        var recordId = checkEl.dataset.id;
+        var farmId = checkEl.dataset.farm;
 
         TsuchiAPI.record.complete(farmId, recordId)
           .then(function() {
             checkEl.classList.toggle('checked');
+            var isChecked = checkEl.classList.contains('checked');
+            checkEl.setAttribute('aria-checked', isChecked ? 'true' : 'false');
             var title = checkEl.nextElementSibling.querySelector('.record-title');
             if (title) title.classList.toggle('completed');
           })
           .catch(function(err) {
-            App.toast(err.error || '更新に失敗しました。', 'error');
-          });
+            App.toast(err.error || '更新に失敗しました。通信状況を確認してください。', 'error');
+          })
+          .finally(function() { processing = false; });
+      }
+
+      el.addEventListener('click', function() { handleCheck(this); });
+      el.addEventListener('keydown', function(e) {
+        if (e.key === ' ' || e.key === 'Enter') {
+          e.preventDefault();
+          handleCheck(this);
+        }
       });
     });
 

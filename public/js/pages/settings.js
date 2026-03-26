@@ -229,7 +229,7 @@ var SettingsPage = (function() {
         }
       })
       .catch(function(err) {
-        App.toast(err.error || '決済の開始に失敗しました。', 'error');
+        App.toast(err.error || '決済ページを開けませんでした。通信状況を確認して、もう一度お試しください。', 'error');
       })
       .finally(function() {
         if (btn) {
@@ -271,7 +271,7 @@ var SettingsPage = (function() {
             loadPlanInfo();
           })
           .catch(function(err) {
-            App.toast(err.error || '解約に失敗しました。', 'error');
+            App.toast(err.error || '解約処理に失敗しました。通信状況を確認して、もう一度お試しください。', 'error');
           })
           .finally(function() {
             cancelBtn.disabled = false;

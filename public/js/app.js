@@ -194,11 +194,91 @@ var App = (function() {
   // DOM読み込み完了後に初期化
   document.addEventListener('DOMContentLoaded', init);
 
+  // --- ボタンローディング状態管理 ---
+
+  /**
+   * ボタンをローディング状態にする
+   * @param {HTMLElement} btn - 対象ボタン
+   * @param {string} loadingText - ローディング中テキスト（省略時: 処理中...）
+   * @returns {function} 元に戻す関数
+   */
+  function btnLoading(btn, loadingText) {
+    if (!btn) return function() {};
+    var originalText = btn.textContent;
+    var originalHtml = btn.innerHTML;
+    btn.disabled = true;
+    btn.classList.add('btn-loading');
+    btn.setAttribute('aria-busy', 'true');
+    btn.innerHTML = '<span class="btn-text">' + originalHtml + '</span>';
+    if (loadingText) {
+      btn.setAttribute('aria-label', loadingText);
+    }
+    return function(success) {
+      btn.classList.remove('btn-loading');
+      btn.removeAttribute('aria-busy');
+      btn.removeAttribute('aria-label');
+      if (success) {
+        btn.classList.add('btn-success');
+        setTimeout(function() {
+          btn.classList.remove('btn-success');
+          btn.innerHTML = originalHtml;
+          btn.disabled = false;
+        }, 1200);
+      } else {
+        btn.innerHTML = originalHtml;
+        btn.disabled = false;
+      }
+    };
+  }
+
+  /**
+   * フォームの二重送信を防止する
+   * @param {HTMLFormElement} form - 対象フォーム
+   * @param {function} handler - 送信ハンドラ(e)
+   */
+  function guardSubmit(form, handler) {
+    if (!form) return;
+    var submitting = false;
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (submitting) return;
+      submitting = true;
+      var btn = form.querySelector('button[type="submit"]');
+      var restore = btnLoading(btn);
+      // handlerはPromiseを返すことを期待
+      var result;
+      try {
+        result = handler(e);
+      } catch(err) {
+        submitting = false;
+        restore(false);
+        return;
+      }
+      if (result && typeof result.then === 'function') {
+        result
+          .then(function() { restore(true); })
+          .catch(function() { restore(false); })
+          .finally(function() { submitting = false; });
+      } else {
+        submitting = false;
+        restore(false);
+      }
+    });
+  }
+
+  // --- ブラウザの戻るボタン対応 ---
+  window.addEventListener('popstate', function() {
+    // hashchangeで既にハンドルされるが、念のためナビゲーション再実行
+    navigate();
+  });
+
   // パブリックAPI
   return {
     toast: toast,
     renderCurrentPage: renderCurrentPage,
     promptInstall: promptInstall,
-    isAuthenticated: isAuthenticated
+    isAuthenticated: isAuthenticated,
+    btnLoading: btnLoading,
+    guardSubmit: guardSubmit
   };
 })();

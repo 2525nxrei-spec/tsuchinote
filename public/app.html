@@ -39,24 +39,28 @@
 </head>
 <body>
 
+  <!-- スキップナビゲーション -->
+  <a href="#app" class="skip-nav">メインコンテンツへスキップ</a>
+
   <!-- ローディングスピナー -->
-  <div id="loading" class="loading-overlay" aria-label="読み込み中">
-    <div class="spinner"></div>
+  <div id="loading" class="loading-overlay" role="status" aria-label="読み込み中">
+    <div class="spinner" aria-hidden="true"></div>
+    <span class="sr-only">読み込み中です。しばらくお待ちください。</span>
   </div>
 
   <!-- メインアプリ領域 -->
-  <div id="app"></div>
+  <main id="app" role="main" aria-label="メインコンテンツ"></main>
 
   <!-- 下部ナビゲーションバー -->
-  <nav id="bottom-nav" class="bottom-nav" style="display:none;">
-    <a href="#/home" class="nav-item" data-page="home">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+  <nav id="bottom-nav" class="bottom-nav" style="display:none;" role="navigation" aria-label="メインナビゲーション">
+    <a href="#/home" class="nav-item" data-page="home" aria-label="ホーム画面へ">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
         <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z"/>
       </svg>
       <span>ホーム</span>
     </a>
-    <a href="#/farm" class="nav-item" data-page="farm">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <a href="#/farm" class="nav-item" data-page="farm" aria-label="畑の管理画面へ">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
         <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/>
         <path d="M12 6v6l4 2"/>
         <path d="M7 17c1-2 3-3 5-3s4 1 5 3"/>
@@ -64,16 +68,16 @@
       </svg>
       <span>畑</span>
     </a>
-    <a href="#/record" class="nav-item" data-page="record">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <a href="#/record" class="nav-item" data-page="record" aria-label="作業記録画面へ">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
         <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
         <rect x="9" y="3" width="6" height="4" rx="1"/>
         <path d="M9 14l2 2 4-4"/>
       </svg>
       <span>記録</span>
     </a>
-    <a href="#/settings" class="nav-item" data-page="settings">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <a href="#/settings" class="nav-item" data-page="settings" aria-label="設定画面へ">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
         <circle cx="12" cy="12" r="3"/>
         <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
       </svg>
@@ -82,7 +86,7 @@
   </nav>
 
   <!-- トースト通知コンテナ -->
-  <div id="toast-container" class="toast-container"></div>
+  <div id="toast-container" class="toast-container" role="status" aria-live="polite" aria-atomic="true"></div>
 
   <!-- スクリプト読み込み -->
   <script src="/js/api.js"></script>

@@ -21,6 +21,23 @@ var TsuchiAPI = (function() {
 
   // --- 内部ヘルパー ---
 
+  /** HTTPステータスに応じた親切なエラーメッセージ */
+  function friendlyError(status) {
+    switch (status) {
+      case 400: return '入力内容に誤りがあります。内容を確認してもう一度お試しください。';
+      case 401: return 'ログインが必要です。再度ログインしてください。';
+      case 403: return 'この操作を行う権限がありません。プランの確認をお願いします。';
+      case 404: return 'お探しのデータが見つかりませんでした。ページを再読み込みしてお試しください。';
+      case 409: return 'データが競合しています。ページを再読み込みしてお試しください。';
+      case 422: return '入力内容を確認してください。必須項目が未入力の可能性があります。';
+      case 429: return 'リクエストが多すぎます。しばらく待ってからお試しください。';
+      case 500: return 'サーバーで問題が発生しました。しばらくしてからもう一度お試しください。';
+      case 502: return 'サーバーが一時的に利用できません。しばらくしてからお試しください。';
+      case 503: return 'サービスがメンテナンス中です。しばらくお待ちください。';
+      default:  return '予期しないエラーが発生しました。ページを再読み込みしてお試しください。';
+    }
+  }
+
   /** JWTトークンを取得 */
   function getToken() {
     return localStorage.getItem('tsuchi_token');
@@ -52,17 +69,27 @@ var TsuchiAPI = (function() {
             localStorage.removeItem('tsuchi_token');
             localStorage.removeItem('tsuchi_user');
             window.location.hash = '#/login';
-            return Promise.reject({ ok: false, error: 'セッションが切れました。再度ログインしてください。' });
+            return Promise.reject({ ok: false, error: 'セッションが切れました。再度ログインしてください。', status: 401 });
           }
           if (!res.ok || data.ok === false) {
-            return Promise.reject({ ok: false, error: data.error || 'エラーが発生しました。' });
+            // ステータスに応じた親切なエラーメッセージ
+            var userMsg = data.error || friendlyError(res.status);
+            return Promise.reject({ ok: false, error: userMsg, status: res.status });
           }
           return data;
+        }).catch(function(parseErr) {
+          // JSONパース失敗（HTML返却等）
+          if (parseErr && parseErr.ok === false) throw parseErr;
+          return Promise.reject({ ok: false, error: friendlyError(res.status), status: res.status });
         });
       })
       .catch(function(err) {
         if (err && err.ok === false) throw err;
-        throw { ok: false, error: '通信エラーが発生しました。' };
+        // ネットワーク・タイムアウト等
+        if (!navigator.onLine) {
+          throw { ok: false, error: 'インターネット接続がありません。Wi-Fiやモバイルデータを確認してください。' };
+        }
+        throw { ok: false, error: '通信エラーが発生しました。電波状況を確認して、もう一度お試しください。' };
       });
   }
 

@@ -189,20 +189,35 @@ var HomePage = (function() {
       });
     }
 
-    // 提案チェック
+    // 提案チェック（アクセシビリティ対応）
     var checks = document.querySelectorAll('.suggestion-check');
     checks.forEach(function(el) {
-      el.addEventListener('click', function() {
-        var id = parseInt(this.dataset.id);
+      el.setAttribute('role', 'checkbox');
+      el.setAttribute('tabindex', '0');
+      el.setAttribute('aria-checked', el.classList.contains('checked') ? 'true' : 'false');
+      el.setAttribute('aria-label', '完了としてマーク');
+
+      function toggleCheck(checkEl) {
+        var id = parseInt(checkEl.dataset.id);
         var idx = state.completedIds.indexOf(id);
         if (idx === -1) {
           state.completedIds.push(id);
-          this.classList.add('checked');
-          this.nextElementSibling.classList.add('completed');
+          checkEl.classList.add('checked');
+          checkEl.setAttribute('aria-checked', 'true');
+          checkEl.nextElementSibling.classList.add('completed');
         } else {
           state.completedIds.splice(idx, 1);
-          this.classList.remove('checked');
-          this.nextElementSibling.classList.remove('completed');
+          checkEl.classList.remove('checked');
+          checkEl.setAttribute('aria-checked', 'false');
+          checkEl.nextElementSibling.classList.remove('completed');
+        }
+      }
+
+      el.addEventListener('click', function() { toggleCheck(this); });
+      el.addEventListener('keydown', function(e) {
+        if (e.key === ' ' || e.key === 'Enter') {
+          e.preventDefault();
+          toggleCheck(this);
         }
       });
     });
