@@ -27,6 +27,7 @@ var LoginPage = (function() {
               '<input class="form-input" type="password" id="login-password" placeholder="パスワードを入力" required autocomplete="current-password" minlength="6" aria-required="true">' +
             '</div>' +
             '<button type="submit" class="btn btn-primary btn-block">ログイン</button>' +
+            '<p style="text-align:center;margin-top:12px;font-size:0.8rem;color:#6b7280;">パスワードをお忘れの方は <a href="contact.html" style="color:#1b4332;text-decoration:underline;">こちら</a></p>' +
           '</form>' +
           '<form id="register-form" style="display:none;" role="tabpanel" aria-label="新規登録フォーム">' +
             '<div class="form-group">' +
