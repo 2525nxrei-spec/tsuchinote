@@ -101,6 +101,18 @@ CREATE TABLE IF NOT EXISTS work_logs (
   FOREIGN KEY (crop_id) REFERENCES crops(id) ON DELETE SET NULL
 );
 
+-- フィードバック・リクエストテーブル（ユーザーからの要望・バグ報告）
+CREATE TABLE IF NOT EXISTS feedback_requests (
+  id TEXT PRIMARY KEY,                          -- ULID
+  name TEXT,                                    -- 送信者名（任意）
+  email TEXT,                                   -- メールアドレス（任意）
+  category TEXT NOT NULL DEFAULT 'other'        -- カテゴリ
+    CHECK (category IN ('feature', 'bug', 'other')),
+  content TEXT NOT NULL,                        -- 内容
+  ip_address TEXT,                              -- 送信者IP（スパム対策）
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
 -- インデックス（頻出クエリ高速化）
 CREATE INDEX IF NOT EXISTS idx_farms_user_id ON farms(user_id);
 CREATE INDEX IF NOT EXISTS idx_crops_farm_id ON crops(farm_id);
@@ -110,3 +122,4 @@ CREATE INDEX IF NOT EXISTS idx_weather_cache_key_date ON weather_cache(lat_lon_k
 CREATE INDEX IF NOT EXISTS idx_suggestions_user_date ON suggestions(user_id, date);
 CREATE INDEX IF NOT EXISTS idx_work_logs_user_date ON work_logs(user_id, date);
 CREATE INDEX IF NOT EXISTS idx_work_logs_farm_date ON work_logs(farm_id, date);
+CREATE INDEX IF NOT EXISTS idx_feedback_requests_created ON feedback_requests(created_at);
