@@ -39,18 +39,23 @@ describe('GET /api/farms/:farmId/suggestions/today', () => {
 
   it('キャッシュが存在する場合はキャッシュを返す', async () => {
     const token = await makeToken();
-    const today = new Date().toISOString().split('T')[0];
-    let callCount = 0;
 
     const env = createMockEnv({
       first: (sql) => {
-        callCount++;
-        // 1回目: 畑チェック
-        if (callCount === 1) {
+        // 畑チェック
+        if (sql.includes('SELECT id, name, latitude')) {
           return { id: 'FARM001', name: 'テスト畑', latitude: 35.6, longitude: 139.7, address: '東京都' };
         }
-        // 2回目: キャッシュチェック
-        if (callCount === 2) {
+        // プラン取得
+        if (sql.includes('SELECT plan FROM users')) {
+          return { plan: 'free' };
+        }
+        // 当日の提案数カウント
+        if (sql.includes('COUNT(*)')) {
+          return { cnt: 0 };
+        }
+        // キャッシュチェック
+        if (sql.includes('SELECT items, weather_summary FROM suggestions')) {
           return {
             items: JSON.stringify([
               { priority: 'high', icon: '💧', title: 'テスト提案', description: 'テスト内容', crop: null }
@@ -74,18 +79,23 @@ describe('GET /api/farms/:farmId/suggestions/today', () => {
 
   it('キャッシュなし+Gemini未設定でモック提案を返す', async () => {
     const token = await makeToken();
-    let callCount = 0;
 
     const env = createMockEnv({
       first: (sql) => {
-        callCount++;
-        // 1回目: 畑チェック
-        if (callCount === 1) {
+        // 畑チェック
+        if (sql.includes('SELECT id, name, latitude')) {
           return { id: 'FARM001', name: 'テスト畑', latitude: 35.6, longitude: 139.7, address: '東京' };
         }
-        // 2回目: suggestionsキャッシュ → なし
-        if (callCount === 2) return null;
-        // 3回目: weather_cache → なし（モックモード）
+        // プラン取得
+        if (sql.includes('SELECT plan FROM users')) {
+          return { plan: 'free' };
+        }
+        // 当日の提案数カウント
+        if (sql.includes('COUNT(*)')) {
+          return { cnt: 0 };
+        }
+        // suggestionsキャッシュ → なし
+        // weather_cache → なし（モックモード）
         return null;
       },
       all: () => ({ results: [] }), // 作物なし

@@ -36,12 +36,15 @@ describe('GET /api/farms/:farmId/weather', () => {
     expect(res.status).toBe(404);
   });
 
-  it('APIキー未設定時はモック天気データを返す', async () => {
+  it('APIキー未設定時はモック天気データを返す（freeプラン=3日分）', async () => {
     const token = await makeToken();
     const env = createMockEnv({
       first: (sql) => {
         if (sql.includes('SELECT id, name, latitude')) {
           return { id: 'FARM001', name: 'テスト畑', latitude: 35.6, longitude: 139.7, address: '東京都' };
+        }
+        if (sql.includes('SELECT plan FROM users')) {
+          return { plan: 'free' };
         }
         return null;
       },
@@ -57,7 +60,7 @@ describe('GET /api/farms/:farmId/weather', () => {
     expect(body.data.current.temp).toBe(22);
     expect(body.data.current.humidity).toBe(55);
     expect(body.data.current.weather).toBe('晴れ');
-    expect(body.data.forecast).toHaveLength(5);
+    expect(body.data.forecast).toHaveLength(3); // freeプランは3日分
     expect(body.data.alerts).toEqual([]);
   });
 
@@ -67,6 +70,9 @@ describe('GET /api/farms/:farmId/weather', () => {
       first: (sql) => {
         if (sql.includes('SELECT id, name, latitude')) {
           return { id: 'FARM001', name: '畑', latitude: 35.6, longitude: 139.7, address: '大阪府' };
+        }
+        if (sql.includes('SELECT plan FROM users')) {
+          return { plan: 'free' };
         }
         return null;
       },
@@ -95,15 +101,19 @@ describe('GET /api/farms/:farmId/weather', () => {
       forecast: [{ date: '2025-07-01', temp_min: 15, temp_max: 25, weather: '曇り', icon: 'cloudy', precipitation: 30 }],
       alerts: [],
     };
-    let callCount = 0;
     const env = createMockEnv({
       first: (sql) => {
-        callCount++;
-        if (callCount === 1) {
+        if (sql.includes('SELECT id, name, latitude')) {
           return { id: 'FARM001', name: '畑', latitude: 35.68, longitude: 139.65, address: '東京都' };
         }
-        // 2回目: weather_cache
-        return { data: JSON.stringify(cachedData) };
+        if (sql.includes('SELECT plan FROM users')) {
+          return { plan: 'free' };
+        }
+        // weather_cache
+        if (sql.includes('weather_cache')) {
+          return { data: JSON.stringify(cachedData) };
+        }
+        return null;
       },
     });
     env.OPENWEATHER_API_KEY = 'test-api-key';
@@ -119,12 +129,13 @@ describe('GET /api/farms/:farmId/weather', () => {
 
   it('OpenWeatherMap APIエラー時にモックにフォールバック', async () => {
     const token = await makeToken();
-    let callCount = 0;
     const env = createMockEnv({
       first: (sql) => {
-        callCount++;
-        if (callCount === 1) {
+        if (sql.includes('SELECT id, name, latitude')) {
           return { id: 'FARM001', name: '畑', latitude: 35.6, longitude: 139.7, address: '東京' };
+        }
+        if (sql.includes('SELECT plan FROM users')) {
+          return { plan: 'free' };
         }
         return null; // キャッシュなし
       },
@@ -149,12 +160,13 @@ describe('GET /api/farms/:farmId/weather', () => {
 
   it('OpenWeatherMap API成功時にデータ変換して返す', async () => {
     const token = await makeToken();
-    let callCount = 0;
     const env = createMockEnv({
       first: (sql) => {
-        callCount++;
-        if (callCount === 1) {
+        if (sql.includes('SELECT id, name, latitude')) {
           return { id: 'FARM001', name: '畑', latitude: 35.6, longitude: 139.7, address: '東京' };
+        }
+        if (sql.includes('SELECT plan FROM users')) {
+          return { plan: 'free' };
         }
         return null; // キャッシュなし
       },
@@ -208,6 +220,9 @@ describe('GET /api/farms/:farmId/weather', () => {
       first: (sql) => {
         if (sql.includes('SELECT id, name, latitude')) {
           return { id: 'FARM001', name: '畑', latitude: 35.6, longitude: 139.7, address: '東京' };
+        }
+        if (sql.includes('SELECT plan FROM users')) {
+          return { plan: 'free' };
         }
         // weather_cacheのクエリで例外
         throw new Error('DB error');
