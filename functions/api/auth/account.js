@@ -39,16 +39,14 @@ export async function onRequestDelete(context) {
     return errorResponse('パスワードが正しくありません', 401);
   }
 
-  // 関連データの削除（トランザクションで安全に）
-  try {
-    await env.DB.batch([
-      env.DB.prepare('DELETE FROM farms WHERE user_id = ?').bind(userId),
-      env.DB.prepare('DELETE FROM users WHERE id = ?').bind(userId),
-    ]);
-  } catch (err) {
-    // farmsテーブルがなければusersだけ削除
-    await env.DB.prepare('DELETE FROM users WHERE id = ?').bind(userId).run();
-  }
+  // 関連データの完全カスケード削除（子テーブルから順に削除）
+  await env.DB.batch([
+    env.DB.prepare('DELETE FROM work_logs WHERE user_id = ?').bind(userId),
+    env.DB.prepare('DELETE FROM suggestions WHERE user_id = ?').bind(userId),
+    env.DB.prepare('DELETE FROM crops WHERE user_id = ?').bind(userId),
+    env.DB.prepare('DELETE FROM farms WHERE user_id = ?').bind(userId),
+    env.DB.prepare('DELETE FROM users WHERE id = ?').bind(userId),
+  ]);
 
   return jsonResponse({ message: 'アカウントを削除しました。ご利用ありがとうございました。' });
 }

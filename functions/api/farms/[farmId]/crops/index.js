@@ -63,6 +63,10 @@ export async function onRequestPost(context) {
   if (auth.error) return auth.error;
   const { userId } = auth;
 
+  // DBからplanを都度取得（JWT依存を排除）
+  const userRow = await env.DB.prepare('SELECT plan FROM users WHERE id = ?').bind(userId).first();
+  const currentPlan = userRow ? userRow.plan : 'free';
+
   let body;
   try {
     body = await request.json();
@@ -82,20 +86,14 @@ export async function onRequestPost(context) {
   ).bind(farmId, userId).first();
   if (!farm) return errorResponse('畑が見つかりません', 404);
 
-  // DBからプランを都度取得（JWT内のplanはダウングレード遅延の問題があるため使わない）
-  const userRow = await env.DB.prepare(
-    'SELECT plan FROM users WHERE id = ?'
-  ).bind(userId).first();
-  const userPlan = userRow ? userRow.plan : 'free';
-
   // プランごとの品目数制限（proは無制限）
-  const cropLimit = CROP_LIMITS[userPlan];
+  const cropLimit = CROP_LIMITS[currentPlan];
   if (cropLimit) {
     const countResult = await env.DB.prepare(
       'SELECT COUNT(*) as cnt FROM crops WHERE farm_id = ? AND user_id = ?'
     ).bind(farmId, userId).first();
     if (countResult.cnt >= cropLimit) {
-      return errorResponse(`現在のプラン（${userPlan}）では1つの畑に${cropLimit}品目までです。プランをアップグレードしてください。`, 403);
+      return errorResponse(`現在のプラン（${currentPlan}）では1つの畑に${cropLimit}品目までです。プランをアップグレードしてください。`, 403);
     }
   }
 
