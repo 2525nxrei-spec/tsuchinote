@@ -23,7 +23,7 @@
   <link rel="apple-touch-icon" href="/icons/icon-192.svg">
   <script>
     (function() {
-      var TARGET = 'tsuchinote-v6';
+      var TARGET = 'tsuchinote-v7';
       if (navigator.serviceWorker) {
         caches.keys().then(function(keys) {
           var stale = keys.filter(function(k) { return k !== TARGET; });
@@ -417,6 +417,7 @@
         <a href="#features" class="header__nav-link">使い方</a>
         <a href="#pricing" class="header__nav-link">料金</a>
         <a href="#faq" class="header__nav-link">FAQ</a>
+        <a href="request.html" class="header__nav-link">リクエスト</a>
       </nav>
       <div class="header__actions">
         <a href="app.html#/login" class="btn btn--ghost btn--sm">ログイン</a>
@@ -434,6 +435,7 @@
     <a href="#features" class="mobile-menu__link">使い方</a>
     <a href="#pricing" class="mobile-menu__link">料金</a>
     <a href="#faq" class="mobile-menu__link">FAQ</a>
+    <a href="request.html" class="mobile-menu__link">リクエスト</a>
     <div class="mobile-menu__actions">
       <a href="app.html#/login" class="btn btn--outline btn--full">ログイン</a>
       <a href="app.html" class="btn btn--primary btn--full">無料ではじめる</a>
@@ -690,6 +692,7 @@
           <a href="#features" class="footer__nav-link">使い方</a>
           <a href="#pricing" class="footer__nav-link">料金</a>
           <a href="#faq" class="footer__nav-link">FAQ</a>
+          <a href="request.html" class="footer__nav-link">リクエスト</a>
         </div>
         <div>
           <p class="footer__nav-title">運営</p>
