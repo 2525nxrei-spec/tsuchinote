@@ -31,7 +31,7 @@ function withSecurityHeaders(response) {
   headers.set('X-Frame-Options', 'DENY');
   headers.set('X-XSS-Protection', '1; mode=block');
   headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  headers.set('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.stripe.com https://js.stripe.com");
+  headers.set('Content-Security-Policy', "default-src 'self'; script-src 'self' https://js.stripe.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; frame-src https://js.stripe.com; connect-src 'self' https://api.stripe.com https://js.stripe.com");
   headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(self)');
   return new Response(response.body, {

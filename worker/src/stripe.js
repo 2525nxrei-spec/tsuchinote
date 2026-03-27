@@ -1,3 +1,4 @@
+// ⚠️ 旧実装 — 本番はfunctions/を使用
 /**
  * ツチノート - Stripe決済モジュール
  * Cloudflare Workers環境でStripe REST APIを直接呼び出す

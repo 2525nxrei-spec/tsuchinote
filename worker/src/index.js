@@ -1,3 +1,4 @@
+// ⚠️ 旧実装 — 本番はfunctions/を使用
 /**
  * ツチノート API — メインルーター
  * Cloudflare Workers エントリーポイント
