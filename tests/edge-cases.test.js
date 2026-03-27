@@ -329,7 +329,14 @@ describe('不正JSON・空ボディで適切なエラーを返す', () => {
 describe('改ざんトークンテスト', () => {
   it('署名を改ざんしたトークンで401', async () => {
     const token = await makeToken('USER001', 'free');
-    const tampered = token.slice(0, -1) + (token.slice(-1) === 'A' ? 'B' : 'A');
+    // 署名部分の中間文字を確実に改ざん（末尾1文字だけだとBase64パディングビットで同一バイト列になる場合がある）
+    const parts = token.split('.');
+    const sig = parts[2];
+    const midIdx = Math.floor(sig.length / 2);
+    const midChar = sig[midIdx];
+    const replacement = midChar === 'x' ? 'Y' : 'x';
+    parts[2] = sig.slice(0, midIdx) + replacement + sig.slice(midIdx + 1);
+    const tampered = parts.join('.');
     const env = createMockEnv();
     const request = new Request('https://tsuchinote.com/api/farms', {
       headers: { 'Authorization': `Bearer ${tampered}` },
