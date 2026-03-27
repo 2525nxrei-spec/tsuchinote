@@ -1,6 +1,6 @@
 // ツチノート Service Worker
 // キャッシュバージョン（更新時にインクリメント）
-var CACHE_VERSION = 'tsuchinote-v6';
+var CACHE_VERSION = 'tsuchinote-v7';
 
 // 静的アセット（キャッシュファースト）
 var STATIC_ASSETS = [
@@ -17,6 +17,7 @@ var STATIC_ASSETS = [
   '/js/pages/record.js',
   '/js/pages/settings.js',
   '/js/pages/camera.js',
+  '/request.html',
   '/manifest.json',
   '/icons/icon-192.svg',
   '/icons/icon-512.svg'
