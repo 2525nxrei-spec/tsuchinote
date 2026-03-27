@@ -45,7 +45,7 @@ describe('requireAuth', () => {
     expect(result.error.status).toBe(401);
   });
 
-  it('有効なトークンでuserId/userPlanを返す', async () => {
+  it('有効なトークンでuserIdを返す（planはDB参照のため返さない）', async () => {
     const token = await createJwt(
       { sub: 'USER001', plan: 'pro', exp: Math.floor(Date.now() / 1000) + 3600 },
       JWT_SECRET
@@ -55,10 +55,10 @@ describe('requireAuth', () => {
 
     expect(result.error).toBeUndefined();
     expect(result.userId).toBe('USER001');
-    expect(result.userPlan).toBe('pro');
+    expect(result.userPlan).toBeUndefined();
   });
 
-  it('planが未設定のトークンはfreeとして扱う', async () => {
+  it('planが未設定のトークンでもuserIdのみ返す', async () => {
     const token = await createJwt(
       { sub: 'USER002', exp: Math.floor(Date.now() / 1000) + 3600 },
       JWT_SECRET
@@ -66,6 +66,7 @@ describe('requireAuth', () => {
     const req = makeRequest(`Bearer ${token}`);
     const result = await requireAuth(req, { JWT_SECRET });
 
-    expect(result.userPlan).toBe('free');
+    expect(result.userId).toBe('USER002');
+    expect(result.userPlan).toBeUndefined();
   });
 });

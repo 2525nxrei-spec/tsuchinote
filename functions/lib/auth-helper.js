@@ -9,7 +9,7 @@ import { verifyJwt, errorResponse } from './utils.js';
  * Authorizationヘッダーからユーザー情報を取得
  * @param {Request} request
  * @param {object} env
- * @returns {{ userId: string, userPlan: string } | Response} 認証情報またはエラーレスポンス
+ * @returns {{ userId: string } | Response} 認証情報またはエラーレスポンス
  */
 export async function requireAuth(request, env) {
   const authHeader = request.headers.get('Authorization');
@@ -26,6 +26,5 @@ export async function requireAuth(request, env) {
   }
   return {
     userId: payload.sub,
-    userPlan: payload.plan || 'free',
   };
 }
