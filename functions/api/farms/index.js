@@ -29,7 +29,7 @@ export async function onRequestPost(context) {
 
   const auth = await requireAuth(request, env);
   if (auth.error) return auth.error;
-  const { userId, userPlan } = auth;
+  const { userId } = auth;
 
   let body;
   try {
@@ -41,6 +41,12 @@ export async function onRequestPost(context) {
   const { name, latitude, longitude } = body;
   const address = body.address || body.location || null;
   if (!name) return errorResponse('畑の名前は必須です');
+
+  // DBからプランを都度取得（JWT内のplanはダウングレード遅延の問題があるため使わない）
+  const userRow = await env.DB.prepare(
+    'SELECT plan FROM users WHERE id = ?'
+  ).bind(userId).first();
+  const userPlan = userRow ? userRow.plan : 'free';
 
   // プラン制限チェック
   const limit = FARM_LIMITS[userPlan] || 1;

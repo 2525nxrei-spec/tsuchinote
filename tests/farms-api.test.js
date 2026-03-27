@@ -112,6 +112,7 @@ describe('POST /api/farms', () => {
     const token = await makeToken('USER001', 'free');
     const env = createMockEnv({
       first: (sql) => {
+        if (sql.includes('SELECT plan FROM users')) return { plan: 'free' };
         if (sql.includes('COUNT(*)')) return { cnt: 1 };
         return null;
       },
@@ -132,6 +133,7 @@ describe('POST /api/farms', () => {
     const token = await makeToken('USER001', 'light');
     const env = createMockEnv({
       first: (sql) => {
+        if (sql.includes('SELECT plan FROM users')) return { plan: 'light' };
         if (sql.includes('COUNT(*)')) return { cnt: 3 };
         return null;
       },
@@ -152,6 +154,7 @@ describe('POST /api/farms', () => {
     const token = await makeToken('USER001', 'pro');
     const env = createMockEnv({
       first: (sql) => {
+        if (sql.includes('SELECT plan FROM users')) return { plan: 'pro' };
         if (sql.includes('COUNT(*)')) return { cnt: 5 };
         return null;
       },
@@ -172,6 +175,7 @@ describe('POST /api/farms', () => {
     const token = await makeToken('USER001', 'free');
     const env = createMockEnv({
       first: (sql) => {
+        if (sql.includes('SELECT plan FROM users')) return { plan: 'free' };
         if (sql.includes('COUNT(*)')) return { cnt: 0 };
         return null;
       },
@@ -195,6 +199,7 @@ describe('POST /api/farms', () => {
     const token = await makeToken('USER001', 'free');
     const env = createMockEnv({
       first: (sql) => {
+        if (sql.includes('SELECT plan FROM users')) return { plan: 'free' };
         if (sql.includes('COUNT(*)')) return { cnt: 0 };
         return null;
       },

@@ -34,6 +34,7 @@ describe('畑作成 - プラン上限ギリギリのテスト', () => {
     const token = await makeToken('USER001', 'free');
     const env = createMockEnv({
       first: (sql) => {
+        if (sql.includes('SELECT plan FROM users')) return { plan: 'free' };
         if (sql.includes('COUNT(*)')) return { cnt: 0 };
         return null;
       },
@@ -51,6 +52,7 @@ describe('畑作成 - プラン上限ギリギリのテスト', () => {
     const token = await makeToken('USER001', 'light');
     const env = createMockEnv({
       first: (sql) => {
+        if (sql.includes('SELECT plan FROM users')) return { plan: 'light' };
         if (sql.includes('COUNT(*)')) return { cnt: 2 };
         return null;
       },
@@ -68,6 +70,7 @@ describe('畑作成 - プラン上限ギリギリのテスト', () => {
     const token = await makeToken('USER001', 'pro');
     const env = createMockEnv({
       first: (sql) => {
+        if (sql.includes('SELECT plan FROM users')) return { plan: 'pro' };
         if (sql.includes('COUNT(*)')) return { cnt: 4 };
         return null;
       },
@@ -85,6 +88,7 @@ describe('畑作成 - プラン上限ギリギリのテスト', () => {
     const token = await makeToken('USER001', 'unknown_plan');
     const env = createMockEnv({
       first: (sql) => {
+        if (sql.includes('SELECT plan FROM users')) return { plan: 'unknown_plan' };
         if (sql.includes('COUNT(*)')) return { cnt: 1 };
         return null;
       },
@@ -159,6 +163,7 @@ describe('作物管理 - 追加テスト', () => {
     const env = createMockEnv({
       first: (sql) => {
         if (sql.includes('SELECT id FROM farms')) return { id: 'FARM001' };
+        if (sql.includes('SELECT plan FROM users')) return { plan: 'light' };
         if (sql.includes('COUNT(*)')) return { cnt: 10 };
         return null;
       },
@@ -177,6 +182,7 @@ describe('作物管理 - 追加テスト', () => {
     const env = createMockEnv({
       first: (sql) => {
         if (sql.includes('SELECT id FROM farms')) return { id: 'FARM001' };
+        if (sql.includes('SELECT plan FROM users')) return { plan: 'pro' };
         // COUNT不要（proは無制限）
         return null;
       },
@@ -195,6 +201,7 @@ describe('作物管理 - 追加テスト', () => {
     const env = createMockEnv({
       first: (sql) => {
         if (sql.includes('SELECT id FROM farms')) return { id: 'FARM001' };
+        if (sql.includes('SELECT plan FROM users')) return { plan: 'pro' };
         return null;
       },
     });
@@ -214,6 +221,7 @@ describe('作物管理 - 追加テスト', () => {
     const env = createMockEnv({
       first: (sql) => {
         if (sql.includes('SELECT id FROM farms')) return { id: 'FARM001' };
+        if (sql.includes('SELECT plan FROM users')) return { plan: 'pro' };
         return null;
       },
     });

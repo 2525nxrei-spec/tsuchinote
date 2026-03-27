@@ -61,7 +61,7 @@ export async function onRequestPost(context) {
 
   const auth = await requireAuth(request, env);
   if (auth.error) return auth.error;
-  const { userId, userPlan } = auth;
+  const { userId } = auth;
 
   let body;
   try {
@@ -81,6 +81,12 @@ export async function onRequestPost(context) {
     'SELECT id FROM farms WHERE id = ? AND user_id = ?'
   ).bind(farmId, userId).first();
   if (!farm) return errorResponse('畑が見つかりません', 404);
+
+  // DBからプランを都度取得（JWT内のplanはダウングレード遅延の問題があるため使わない）
+  const userRow = await env.DB.prepare(
+    'SELECT plan FROM users WHERE id = ?'
+  ).bind(userId).first();
+  const userPlan = userRow ? userRow.plan : 'free';
 
   // プランごとの品目数制限（proは無制限）
   const cropLimit = CROP_LIMITS[userPlan];

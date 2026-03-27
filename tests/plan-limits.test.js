@@ -10,6 +10,8 @@
 import { describe, it, expect, vi } from 'vitest';
 import { onRequestGet as todayHandler } from '../functions/api/farms/[farmId]/suggestions/today.js';
 import { onRequestGet as weatherHandler } from '../functions/api/farms/[farmId]/weather/index.js';
+import { onRequestPost as farmsCreateHandler } from '../functions/api/farms/index.js';
+import { onRequestPost as cropsCreateHandler } from '../functions/api/farms/[farmId]/crops/index.js';
 import { onRequestPost as checkoutHandler } from '../functions/api/subscription/checkout.js';
 import { onRequestGet as statusHandler } from '../functions/api/subscription/status.js';
 import { onRequestPost as cancelHandler } from '../functions/api/subscription/cancel.js';
@@ -372,5 +374,88 @@ describe('全APIエンドポイントが常にJSON形式で応答', () => {
     const request = new Request('https://tsuchinote.com/api/subscription/stripe-key');
     const res = await stripeKeyHandler({ request, env });
     await assertJsonResponse(res);
+  });
+});
+
+// === 畑作成・作物登録でもJWTではなくDBのプランが使われるテスト ===
+describe('畑作成: JWT内のplanとDB上のplanが異なる場合にDB優先', () => {
+  it('JWTはproだがDBはfree → freeの制限（1畑）が適用される', async () => {
+    // JWTにはproと書かれているが、DBにはfreeと登録されている
+    const token = await makeToken('USER001', 'pro');
+    const env = createMockEnv({
+      first: (sql) => {
+        if (sql.includes('SELECT plan FROM users')) return { plan: 'free' }; // DBはfree
+        if (sql.includes('COUNT(*)')) return { cnt: 1 }; // 既に1畑
+        return null;
+      },
+    });
+    const request = new Request('https://tsuchinote.com/api/farms', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ name: '2つ目の畑' }),
+    });
+    const res = await farmsCreateHandler({ request, env });
+    // freeなら1畑上限 → 403
+    expect(res.status).toBe(403);
+  });
+
+  it('JWTはfreeだがDBはpro → proの制限（5畑）が適用される', async () => {
+    const token = await makeToken('USER001', 'free');
+    const env = createMockEnv({
+      first: (sql) => {
+        if (sql.includes('SELECT plan FROM users')) return { plan: 'pro' }; // DBはpro
+        if (sql.includes('COUNT(*)')) return { cnt: 4 }; // 既に4畑
+        return null;
+      },
+    });
+    const request = new Request('https://tsuchinote.com/api/farms', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ name: '5つ目の畑' }),
+    });
+    const res = await farmsCreateHandler({ request, env });
+    // proなら5畑まで → 201
+    expect(res.status).toBe(201);
+  });
+});
+
+describe('作物登録: JWT内のplanとDB上のplanが異なる場合にDB優先', () => {
+  it('JWTはproだがDBはfree → freeの制限（5品目）が適用される', async () => {
+    const token = await makeToken('USER001', 'pro');
+    const env = createMockEnv({
+      first: (sql) => {
+        if (sql.includes('SELECT id FROM farms')) return { id: 'FARM001' };
+        if (sql.includes('SELECT plan FROM users')) return { plan: 'free' }; // DBはfree
+        if (sql.includes('COUNT(*)')) return { cnt: 5 }; // 既に5品目
+        return null;
+      },
+    });
+    const request = new Request('https://tsuchinote.com/api/farms/FARM001/crops', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ name: '6番目の品目' }),
+    });
+    const res = await cropsCreateHandler({ request, env, params: { farmId: 'FARM001' } });
+    // freeなら5品目上限 → 403
+    expect(res.status).toBe(403);
+  });
+
+  it('JWTはfreeだがDBはpro → proは無制限で201', async () => {
+    const token = await makeToken('USER001', 'free');
+    const env = createMockEnv({
+      first: (sql) => {
+        if (sql.includes('SELECT id FROM farms')) return { id: 'FARM001' };
+        if (sql.includes('SELECT plan FROM users')) return { plan: 'pro' }; // DBはpro
+        return null;
+      },
+    });
+    const request = new Request('https://tsuchinote.com/api/farms/FARM001/crops', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ name: '何品目でもOK' }),
+    });
+    const res = await cropsCreateHandler({ request, env, params: { farmId: 'FARM001' } });
+    // proなら無制限 → 201
+    expect(res.status).toBe(201);
   });
 });
