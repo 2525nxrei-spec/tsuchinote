@@ -151,7 +151,6 @@ var SettingsPage = (function() {
             '<tr><td>天気予報</td><td>3日間</td><td>5日間</td><td>5日間</td></tr>' +
             '<tr><td>AI提案</td><td>1日1回</td><td>1日3回</td><td>毎日+AI相談</td></tr>' +
             '<tr><td>作業記録</td><td>&#9711;</td><td>&#9711;</td><td>&#9711;</td></tr>' +
-            '<tr><td>成長アルバム</td><td>&mdash;</td><td>&#9711;</td><td>&#9711;</td></tr>' +
           '</tbody>' +
         '</table>' +
       '</div>' +

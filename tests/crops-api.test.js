@@ -101,6 +101,7 @@ describe('POST /api/farms/:farmId/crops', () => {
     const env = createMockEnv({
       first: (sql, args) => {
         if (sql.includes('SELECT id FROM farms')) return { id: 'FARM001' };
+        if (sql.includes('SELECT plan FROM users')) return { plan: 'free' };
         if (sql.includes('COUNT(*)')) return { cnt: 5 };
         return null;
       },
@@ -122,6 +123,7 @@ describe('POST /api/farms/:farmId/crops', () => {
     const env = createMockEnv({
       first: (sql) => {
         if (sql.includes('SELECT id FROM farms')) return { id: 'FARM001' };
+        if (sql.includes('SELECT plan FROM users')) return { plan: 'pro' };
         return null;
       },
     });

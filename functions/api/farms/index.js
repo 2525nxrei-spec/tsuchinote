@@ -6,7 +6,6 @@
 import { requireAuth } from '../../lib/auth-helper.js';
 import { generateUlid, jsonResponse, errorResponse } from '../../lib/utils.js';
 
-// プランごとの畑上限数
 // プランごとの畑上限数（設定画面の比較表と一致させる: Free=1, Light=3, Pro=5）
 const FARM_LIMITS = { free: 1, light: 3, pro: 5 };
 
@@ -29,7 +28,11 @@ export async function onRequestPost(context) {
 
   const auth = await requireAuth(request, env);
   if (auth.error) return auth.error;
-  const { userId, userPlan } = auth;
+  const { userId } = auth;
+
+  // DBからplanを都度取得（JWT依存を排除）
+  const userRow = await env.DB.prepare('SELECT plan FROM users WHERE id = ?').bind(userId).first();
+  const currentPlan = userRow ? userRow.plan : 'free';
 
   let body;
   try {
@@ -43,13 +46,13 @@ export async function onRequestPost(context) {
   if (!name) return errorResponse('畑の名前は必須です');
 
   // プラン制限チェック
-  const limit = FARM_LIMITS[userPlan] || 1;
+  const limit = FARM_LIMITS[currentPlan] || 1;
   const countResult = await env.DB.prepare(
     'SELECT COUNT(*) as cnt FROM farms WHERE user_id = ?'
   ).bind(userId).first();
 
   if (countResult.cnt >= limit) {
-    return errorResponse(`現在のプラン（${userPlan}）では畑は${limit}つまでです。プランをアップグレードしてください。`, 403);
+    return errorResponse(`現在のプラン（${currentPlan}）では畑は${limit}つまでです。プランをアップグレードしてください。`, 403);
   }
 
   const id = generateUlid();

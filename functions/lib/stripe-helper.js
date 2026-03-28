@@ -22,6 +22,10 @@ export function isMockMode(env) {
 
 /** Stripe REST APIへのリクエストヘルパー */
 export async function stripeRequest(path, method, body, env) {
+  if (!env.STRIPE_SECRET_KEY) {
+    throw new Error('STRIPE_SECRET_KEYが設定されていません。決済機能を利用するにはStripe APIキーが必要です。');
+  }
+
   const url = `${STRIPE_API_BASE}${path}`;
   const headers = {
     'Authorization': `Bearer ${env.STRIPE_SECRET_KEY}`,

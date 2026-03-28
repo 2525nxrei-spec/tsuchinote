@@ -1,11 +1,19 @@
 /**
  * GET /api/farms/:farmId/suggestions/today — 今日のAI提案を取得
+ * プランごとの回数制限: free=1日1回, light=1日3回, pro=無制限
  */
 
 import { requireAuth } from '../../../../lib/auth-helper.js';
 import { getForecast } from '../../../../lib/weather-helper.js';
 import { calculateStage } from '../../../../lib/crop-helper.js';
 import { generateUlid, jsonResponse, errorResponse } from '../../../../lib/utils.js';
+
+/** プランごとの1日あたりAI提案上限（0 = 無制限） */
+const PLAN_SUGGESTION_LIMITS = {
+  free: 1,
+  light: 3,
+  pro: 0,
+};
 
 export async function onRequestGet(context) {
   const { request, env, params } = context;
@@ -23,9 +31,30 @@ export async function onRequestGet(context) {
 
   const today = new Date().toISOString().split('T')[0];
 
-  // 当日のキャッシュチェック
+  // --- 修正2対応: DBからプランを都度取得（JWT内のplanは使わない） ---
+  const userRow = await env.DB.prepare(
+    'SELECT plan FROM users WHERE id = ?'
+  ).bind(userId).first();
+  const plan = userRow ? userRow.plan : 'free';
+
+  // 当日の提案数をカウント（全畑合計）
+  const countRow = await env.DB.prepare(
+    'SELECT COUNT(*) as cnt FROM suggestions WHERE user_id = ? AND date = ?'
+  ).bind(userId, today).first();
+  const todayCount = countRow ? countRow.cnt : 0;
+
+  // プラン上限チェック
+  const limit = PLAN_SUGGESTION_LIMITS[plan] ?? 1;
+  if (limit > 0 && todayCount >= limit) {
+    return errorResponse(
+      `本日のAI提案回数上限（${limit}回）に達しました。プランをアップグレードすると回数が増えます。`,
+      429
+    );
+  }
+
+  // この畑の当日キャッシュチェック（同一畑で同日に再取得した場合はキャッシュ返却）
   const cached = await env.DB.prepare(
-    'SELECT items, weather_summary FROM suggestions WHERE user_id = ? AND farm_id = ? AND date = ?'
+    'SELECT items, weather_summary FROM suggestions WHERE user_id = ? AND farm_id = ? AND date = ? ORDER BY created_at DESC LIMIT 1'
   ).bind(userId, farmId, today).first();
 
   if (cached) {
@@ -34,6 +63,7 @@ export async function onRequestGet(context) {
       items: JSON.parse(cached.items),
       weatherSummary: cached.weather_summary,
       cached: true,
+      remaining: limit > 0 ? limit - todayCount : null,
     });
   }
 
@@ -83,7 +113,14 @@ export async function onRequestGet(context) {
        VALUES (?, ?, ?, ?, ?, ?, ?)`
     ).bind(id, userId, farmId, today, JSON.stringify(items), weatherSummary, new Date().toISOString()).run();
 
-    return jsonResponse({ date: today, items, weatherSummary, cached: false });
+    const newCount = todayCount + 1;
+    return jsonResponse({
+      date: today,
+      items,
+      weatherSummary,
+      cached: false,
+      remaining: limit > 0 ? limit - newCount : null,
+    });
   } catch (err) {
     console.error('提案生成エラー:', err);
     return jsonResponse({

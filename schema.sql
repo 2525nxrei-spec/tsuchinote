@@ -81,8 +81,9 @@ CREATE TABLE IF NOT EXISTS suggestions (
   weather_summary TEXT,                         -- 天気要約（例: 晴れ 最高28℃/最低18℃）
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-  FOREIGN KEY (farm_id) REFERENCES farms(id) ON DELETE CASCADE,
-  UNIQUE (user_id, farm_id, date)              -- 1日1畑1提案
+  FOREIGN KEY (farm_id) REFERENCES farms(id) ON DELETE CASCADE
+  -- プランごとに1日複数回の提案を許可（free=1回, light=3回, pro=無制限）
+  -- 旧: UNIQUE (user_id, farm_id, date) — 1日1畑1提案
 );
 
 -- 作業ログテーブル（実際にやった作業記録）
