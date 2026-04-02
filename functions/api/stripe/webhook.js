@@ -92,8 +92,10 @@ async function handleWebhook(request, env) {
       new Date().toISOString()
     ).run();
   } catch (err) {
-    // テーブルが存在しない場合は無視（ログ保存失敗でも処理結果は返す）
-    console.warn('webhooks_logへの書き込みに失敗:', err.message);
+    // UNIQUE制約違反は並行リクエストによるものなので無視
+    if (!err.message?.includes('UNIQUE')) {
+      console.warn('webhooks_logへの書き込みに失敗:', err.message);
+    }
   }
 
   return result;
