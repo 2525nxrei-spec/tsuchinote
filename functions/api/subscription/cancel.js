@@ -55,6 +55,11 @@ export async function onRequestPost(context) {
       env
     );
 
+    // DBのcancel_at_period_endフラグを更新
+    await env.DB.prepare(
+      'UPDATE users SET cancel_at_period_end = 1, updated_at = datetime(\'now\') WHERE id = ?'
+    ).bind(userId).run();
+
     return jsonResponse({
       success: true,
       message: '現在の請求期間終了時にキャンセルされます',
