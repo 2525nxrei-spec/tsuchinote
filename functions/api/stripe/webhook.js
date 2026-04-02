@@ -17,7 +17,8 @@ export async function onRequestPost(context) {
     const result = await handleWebhook(request, env);
     return jsonResponse(result);
   } catch (err) {
-    return errorResponse(err.message, 400);
+    console.error('Webhookエラー:', err.message);
+    return errorResponse('Webhook処理に失敗しました', 400);
   }
 }
 
