@@ -51,3 +51,5 @@ STRIPE_PUBLISHABLE_KEY = ""
 name = "tsuchinote-staging"
 [env.preview.vars]
 APP_URL = "https://staging.tsuchinote.pages.dev"
+
+# D1 binding verified 2026-04-03
