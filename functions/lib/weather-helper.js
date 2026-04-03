@@ -37,8 +37,19 @@ export async function getForecast(farm, env) {
     return getMockWeather();
   }
 
-  const lat = farm.latitude || 35.6762;
-  const lon = farm.longitude || 139.6503;
+  // 座標が未設定の場合はフォールバックせず明示的に通知
+  if (!farm.latitude || !farm.longitude) {
+    return {
+      location: farm.address || '位置情報未設定',
+      current: { temp: null, temp_min: null, temp_max: null, humidity: null, weather: '位置情報が未設定です', icon: 'cloudy', wind_speed: null },
+      forecast: [],
+      alerts: [{ type: 'info', date: new Date().toISOString().split('T')[0], message: '畑の位置情報を設定すると、正確な天気予報が表示されます。' }],
+      locationNotSet: true,
+    };
+  }
+
+  const lat = farm.latitude;
+  const lon = farm.longitude;
   const cacheKey = `${lat.toFixed(2)}_${lon.toFixed(2)}`;
   const today = new Date().toISOString().split('T')[0];
 

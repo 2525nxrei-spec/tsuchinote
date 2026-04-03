@@ -37,7 +37,7 @@ export async function onRequestPost(context) {
     // モックモード
     if (isMockMode(env)) {
       return jsonResponse({
-        clientSecret: 'mock_client_secret_123',
+        url: 'https://tsuchinote.com/?payment=success&session_id=mock_session_123',
         session_id: 'mock_session_123',
         mock: true,
       });
@@ -61,13 +61,13 @@ export async function onRequestPost(context) {
       throw new Error(`Stripe Price IDが設定されていません: ${PLAN_MAP[planId]}`);
     }
 
-    // Embedded Checkout: ページ内埋め込み決済（リダイレクトなし）
+    // リダイレクト型 Stripe Checkout
     const params = {
       'mode': 'subscription',
-      'ui_mode': 'embedded',
       'line_items[0][price]': priceId,
       'line_items[0][quantity]': '1',
-      'return_url': `${appUrl}/?payment=success&session_id={CHECKOUT_SESSION_ID}#/settings`,
+      'success_url': `${appUrl}/?payment=success&session_id={CHECKOUT_SESSION_ID}#/settings`,
+      'cancel_url': `${appUrl}/?payment=cancel#/settings`,
       'client_reference_id': userId,
       'locale': 'ja',
       'metadata[user_id]': userId,
@@ -83,7 +83,7 @@ export async function onRequestPost(context) {
     const session = await stripeRequest('/checkout/sessions', 'POST', params, env);
 
     return jsonResponse({
-      clientSecret: session.client_secret,
+      url: session.url,
       session_id: session.id,
     });
   } catch (err) {

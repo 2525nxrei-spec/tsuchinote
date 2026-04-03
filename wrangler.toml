@@ -29,8 +29,8 @@ bucket_name = "tsuchinote-storage"
 APP_URL = "https://tsuchinote.com"
 STRIPE_PRICE_LIGHT = "price_1TF9k09Fc8HnuaokrMmKlFo4"
 STRIPE_PRICE_PRO = "price_1TFA2Y9Fc8Hnuaokitufi136"
-# Stripe公開鍵（Embedded Checkout用）— Cloudflareダッシュボードで本番値を設定
-STRIPE_PUBLISHABLE_KEY = ""
+# STRIPE_PUBLISHABLE_KEY は Cloudflare ダッシュボードのシークレットで設定すること
+# [vars]に空文字で定義するとsecretを上書きしてしまうため、ここには書かない
 
 # ============================================================
 # 本番環境

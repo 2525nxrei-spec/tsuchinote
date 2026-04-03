@@ -34,8 +34,9 @@ export async function onRequestGet(context) {
     }
 
     // Stripe APIから支払い履歴を取得（最新20件）
+    const customerId = encodeURIComponent(user.stripe_customer_id);
     const invoicesData = await stripeRequest(
-      `/invoices?customer=${user.stripe_customer_id}&limit=20&status=paid`,
+      `/invoices?customer=${customerId}&limit=20&status=paid`,
       'GET',
       null,
       env

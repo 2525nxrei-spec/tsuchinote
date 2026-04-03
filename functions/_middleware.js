@@ -41,7 +41,17 @@ function withSecurityHeaders(response) {
   });
 }
 
-/** インメモリレート制限（IP+パスベース、ログイン/登録用） */
+/**
+ * レート制限（IP+パスベース、ログイン/登録用）
+ *
+ * 注意: Cloudflare Workers は分散環境のため、インメモリMapによるレート制限は
+ * 同一isolate内でのみ有効。異なるisolateにルーティングされたリクエストには適用されない。
+ * 本番環境での厳密なレート制限が必要な場合は以下のいずれかを検討:
+ *   - Cloudflare WAF Rate Limiting ルール（推奨: インフラ側で設定）
+ *   - D1テーブルにIP+タイムスタンプを記録する方式
+ *   - KVによるカウンター管理
+ * 現状はベストエフォートの簡易防御として維持する。
+ */
 const rateLimitMap = new Map();
 const RATE_LIMIT_WINDOW = 60 * 1000;
 const RATE_LIMIT_MAX_AUTH = 10;

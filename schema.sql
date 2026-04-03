@@ -12,6 +12,8 @@ CREATE TABLE IF NOT EXISTS users (
     CHECK (plan IN ('free', 'light', 'pro')),
   stripe_customer_id TEXT,                      -- Stripe顧客ID
   stripe_subscription_id TEXT,                  -- Stripeサブスク契約ID
+  cancel_at_period_end INTEGER NOT NULL DEFAULT 0  -- 期間終了時キャンセル予約: 0=なし, 1=予約済み
+    CHECK (cancel_at_period_end IN (0, 1)),
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
@@ -112,6 +114,15 @@ CREATE TABLE IF NOT EXISTS feedback_requests (
   content TEXT NOT NULL,                        -- 内容
   ip_address TEXT,                              -- 送信者IP（スパム対策）
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- Webhook冪等性チェック用テーブル（同一イベントの重複処理防止）
+CREATE TABLE IF NOT EXISTS webhooks_log (
+  id TEXT PRIMARY KEY,                          -- ULID
+  event_type TEXT NOT NULL,                     -- イベント種別（例: checkout.session.completed）
+  stripe_event_id TEXT NOT NULL UNIQUE,         -- StripeイベントID（重複防止キー）
+  payload TEXT,                                 -- イベントペイロードJSON
+  processed_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
 -- インデックス（頻出クエリ高速化）

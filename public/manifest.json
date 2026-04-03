@@ -2,7 +2,7 @@
   "name": "ツチノート",
   "short_name": "ツチノート",
   "description": "毎朝届く、畑の天気予報。家庭菜園の作業を天気に合わせて提案します。",
-  "start_url": "/",
+  "start_url": "/app.html",
   "display": "standalone",
   "orientation": "portrait",
   "theme_color": "#2d6a4f",

@@ -257,15 +257,7 @@ var App = (function() {
       if (e.key === 'Escape') {
         var overlay = document.querySelector('.modal-overlay');
         if (overlay) overlay.remove();
-        // Stripe決済モーダルも閉じる
-        var stripeModal = document.getElementById('stripe-checkout-modal');
-        if (stripeModal) {
-          stripeModal.remove();
-          if (window._tsuchi_embedded_checkout) {
-            window._tsuchi_embedded_checkout.destroy();
-            window._tsuchi_embedded_checkout = null;
-          }
-        }
+        /* (リダイレクト型に移行済みのためCheckoutモーダルは不要) */
       }
     });
   }

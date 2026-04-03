@@ -96,14 +96,27 @@ var SettingsPage = (function() {
       }
     }
 
-    // URLパラメータで決済結果をチェック
+    // URLパラメータで決済結果をチェック（厳密なパラメータマッチング）
     var paymentResult = '';
-    var hash = window.location.hash || '';
-    if (hash.indexOf('payment=success') !== -1 || hash.indexOf('payment=mock_success') !== -1) {
+    var fullUrl = window.location.href || '';
+    var urlQuery = '';
+    // ?payment=xxx はハッシュの前に付く場合とハッシュ内に付く場合がある
+    if (fullUrl.indexOf('?') !== -1) {
+      urlQuery = fullUrl.substring(fullUrl.indexOf('?'));
+      if (urlQuery.indexOf('#') !== -1) {
+        urlQuery = urlQuery.substring(0, urlQuery.indexOf('#'));
+      }
+    }
+    var paymentParam = '';
+    try {
+      paymentParam = new URLSearchParams(urlQuery).get('payment') || '';
+    } catch(e) { paymentParam = ''; }
+
+    if (paymentParam === 'success') {
       paymentResult = '<div class="alert-banner" style="background:var(--green-light);color:var(--green-dark);margin-bottom:16px;">' +
         '&#10004; 決済が完了しました！プランが更新されます。' +
       '</div>';
-    } else if (hash.indexOf('payment=cancel') !== -1) {
+    } else if (paymentParam === 'cancel') {
       paymentResult = '<div class="alert-banner" style="margin-bottom:16px;">' +
         '決済がキャンセルされました。' +
       '</div>';
@@ -239,17 +252,7 @@ var SettingsPage = (function() {
     '</div>';
   }
 
-  /** Embedded Checkout モーダルを閉じる */
-  function closeCheckoutModal() {
-    var modal = document.getElementById('stripe-checkout-modal');
-    if (modal) modal.remove();
-    if (window._tsuchi_embedded_checkout) {
-      window._tsuchi_embedded_checkout.destroy();
-      window._tsuchi_embedded_checkout = null;
-    }
-  }
-
-  /** チェックアウト（Embedded Checkout方式） */
+  /** チェックアウト（リダイレクト型 Stripe Checkout） */
   function startCheckout(planId) {
     var btn = document.getElementById('select-' + planId);
     if (btn) {
@@ -265,38 +268,10 @@ var SettingsPage = (function() {
           loadPlanInfo();
           return;
         }
-        if (res.data && res.data.clientSecret) {
-          // Stripe公開鍵を取得してEmbedded Checkoutを表示
-          return fetch('/api/subscription/stripe-key')
-            .then(function(r) { return r.json(); })
-            .then(function(keyData) {
-              if (!keyData.publishableKey) {
-                throw new Error('Stripe公開鍵が取得できませんでした');
-              }
-              var stripe = Stripe(keyData.publishableKey);
-
-              // モーダルを作成
-              var modal = document.createElement('div');
-              modal.id = 'stripe-checkout-modal';
-              modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:10000;display:flex;align-items:center;justify-content:center;padding:16px;';
-              modal.innerHTML = '<div style="background:#fff;border-radius:12px;width:100%;max-width:500px;max-height:90vh;overflow:auto;position:relative;">' +
-                '<button id="stripe-checkout-close" style="position:absolute;top:12px;right:12px;background:none;border:none;font-size:24px;cursor:pointer;color:#666;z-index:1;">&times;</button>' +
-                '<div id="stripe-checkout-container" style="padding:16px;"></div>' +
-              '</div>';
-              document.body.appendChild(modal);
-
-              // 閉じるボタン
-              document.getElementById('stripe-checkout-close').addEventListener('click', closeCheckoutModal);
-              // オーバーレイクリックで閉じる
-              modal.addEventListener('click', function(e) { if (e.target === modal) closeCheckoutModal(); });
-
-              // Embedded Checkoutをマウント
-              return stripe.initEmbeddedCheckout({ clientSecret: res.data.clientSecret })
-                .then(function(checkout) {
-                  window._tsuchi_embedded_checkout = checkout;
-                  checkout.mount('#stripe-checkout-container');
-                });
-            });
+        // リダイレクト型: サーバーから返されたStripe Checkout URLに遷移
+        var url = (res.data && res.data.url) || res.url;
+        if (url) {
+          window.location.href = url;
         } else {
           App.toast('決済ページの準備中です。', 'warning');
         }

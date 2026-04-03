@@ -13,6 +13,12 @@ import { jsonResponse, errorResponse, generateUlid } from '../../lib/utils.js';
 export async function onRequestPost(context) {
   const { request, env } = context;
 
+  // STRIPE_WEBHOOK_SECRET未設定時は署名検証が不可能なため即エラー
+  if (!isMockMode(env) && !env.STRIPE_WEBHOOK_SECRET) {
+    console.error('STRIPE_WEBHOOK_SECRETが設定されていません');
+    return errorResponse('サーバー設定エラー: Webhook署名シークレットが未設定です', 500);
+  }
+
   try {
     const result = await handleWebhook(request, env);
     return jsonResponse(result);

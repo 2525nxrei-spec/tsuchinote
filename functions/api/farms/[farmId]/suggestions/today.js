@@ -57,6 +57,9 @@ export async function onRequestGet(context) {
     'SELECT items, weather_summary FROM suggestions WHERE user_id = ? AND farm_id = ? AND date = ? ORDER BY created_at DESC LIMIT 1'
   ).bind(userId, farmId, today).first();
 
+  // キャッシュヒット時: 同一畑の同日再取得なので追加カウントしない（意図的）
+  // 理由: 同じ畑の同じ日のデータを再表示するだけなので、API呼び出しは発生しない
+  // 異なる畑へのリクエストはキャッシュミスとなり、通常通りカウントされる
   if (cached) {
     return jsonResponse({
       date: today,
@@ -158,11 +161,15 @@ ${cropsText}
 
 注意: 天気に基づいた具体的なアドバイスを。「水やりは朝のうちに」のように時間帯も指定。`;
 
-  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${env.GEMINI_API_KEY}`;
+  // APIキーはURLパラメータではなくヘッダーで送信（セキュリティ向上）
+  const apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
   const res = await fetch(apiUrl, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'x-goog-api-key': env.GEMINI_API_KEY,
+    },
     body: JSON.stringify({
       contents: [{ parts: [{ text: prompt }] }],
       generationConfig: {

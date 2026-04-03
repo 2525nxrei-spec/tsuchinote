@@ -18,21 +18,9 @@ export async function onRequestPost(context) {
   const { userId } = auth;
 
   try {
-    // モックモード: planを即座にfreeに変更
+    // モックモードではStripe APIが利用できないため決済操作を拒否
     if (isMockMode(env)) {
-      await env.DB.prepare(`
-        UPDATE users
-        SET plan = 'free',
-            stripe_subscription_id = NULL,
-            updated_at = datetime('now')
-        WHERE id = ?
-      `).bind(userId).run();
-
-      return jsonResponse({
-        success: true,
-        message: 'モックモード: サブスクリプションを即時キャンセルしました',
-        plan: 'free',
-      });
+      return errorResponse('Stripe APIキーが未設定のため、解約処理を実行できません', 503);
     }
 
     const user = await env.DB.prepare(

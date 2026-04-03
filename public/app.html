@@ -18,7 +18,7 @@
   <script>
     // 古いService Workerキャッシュを自動クリア
     (function() {
-      var TARGET = 'tsuchinote-v7';
+      var TARGET = 'tsuchinote-v8';
       if (navigator.serviceWorker) {
         caches.keys().then(function(keys) {
           var stale = keys.filter(function(k) { return k !== TARGET; });
@@ -88,8 +88,8 @@
   <!-- トースト通知コンテナ -->
   <div id="toast-container" class="toast-container" role="status" aria-live="polite" aria-atomic="true"></div>
 
-  <!-- Stripe.js（Embedded Checkout用 — deferなしで確実に先に読み込む） -->
-  <script src="https://js.stripe.com/v3/"></script>
+  <!-- Stripe.js（決済ページで使用 — 非同期読み込みでパフォーマンス改善） -->
+  <script src="https://js.stripe.com/v3/" async></script>
 
   <!-- スクリプト読み込み -->
   <script src="/js/api.js"></script>

@@ -27,13 +27,23 @@ export async function onRequestPut(context) {
   }
 
   const { content, date, cropId } = body;
+
+  // 各フィールドをundefined（未指定）の場合は現在値を維持、null指定時はクリア可能にする
+  const sets = [];
+  const binds = [];
+
+  if (content !== undefined) { sets.push('content = ?'); binds.push(content); }
+  if (date !== undefined) { sets.push('date = ?'); binds.push(date); }
+  if (cropId !== undefined) { sets.push('crop_id = ?'); binds.push(cropId); }
+
+  if (sets.length === 0) {
+    return jsonResponse({ updated: true }); // 更新なし
+  }
+
+  binds.push(recordId, userId);
   await env.DB.prepare(
-    `UPDATE work_logs SET
-       content = COALESCE(?, content),
-       date = COALESCE(?, date),
-       crop_id = COALESCE(?, crop_id)
-     WHERE id = ? AND user_id = ?`
-  ).bind(content || null, date || null, cropId || null, recordId, userId).run();
+    `UPDATE work_logs SET ${sets.join(', ')} WHERE id = ? AND user_id = ?`
+  ).bind(...binds).run();
 
   return jsonResponse({ updated: true });
 }

@@ -33,6 +33,9 @@ export async function onRequestPost(context) {
   if (password.length < 8) {
     return errorResponse('パスワードは8文字以上にしてください');
   }
+  if (!/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) {
+    return errorResponse('パスワードは英字と数字の両方を含めてください');
+  }
   if (name.length > 50) {
     return errorResponse('表示名は50文字以内にしてください');
   }

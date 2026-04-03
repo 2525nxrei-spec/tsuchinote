@@ -44,15 +44,25 @@ export async function onRequestPut(context) {
   }
 
   const { name, latitude, longitude } = body;
-  const address = body.address || body.location || null;
+  const address = body.address !== undefined ? body.address : (body.location !== undefined ? body.location : undefined);
+
+  // 各フィールドをundefined（未指定）の場合は現在値を維持、null指定時はクリア可能にする
+  const sets = [];
+  const binds = [];
+
+  if (name !== undefined) { sets.push('name = ?'); binds.push(name); }
+  if (latitude !== undefined) { sets.push('latitude = ?'); binds.push(latitude); }
+  if (longitude !== undefined) { sets.push('longitude = ?'); binds.push(longitude); }
+  if (address !== undefined) { sets.push('address = ?'); binds.push(address); }
+
+  if (sets.length === 0) {
+    return errorResponse('更新するフィールドが指定されていません');
+  }
+
+  binds.push(farmId, userId);
   await env.DB.prepare(
-    `UPDATE farms SET
-       name = COALESCE(?, name),
-       latitude = COALESCE(?, latitude),
-       longitude = COALESCE(?, longitude),
-       address = COALESCE(?, address)
-     WHERE id = ? AND user_id = ?`
-  ).bind(name || null, latitude ?? null, longitude ?? null, address || null, farmId, userId).run();
+    `UPDATE farms SET ${sets.join(', ')} WHERE id = ? AND user_id = ?`
+  ).bind(...binds).run();
 
   const updated = await env.DB.prepare(
     'SELECT id, name, latitude, longitude, address, created_at FROM farms WHERE id = ?'

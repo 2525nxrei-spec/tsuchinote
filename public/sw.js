@@ -1,6 +1,6 @@
 // ツチノート Service Worker
 // キャッシュバージョン（更新時にインクリメント）
-var CACHE_VERSION = 'tsuchinote-v7';
+var CACHE_VERSION = 'tsuchinote-v8';
 
 // 静的アセット（キャッシュファースト）
 var STATIC_ASSETS = [
@@ -62,6 +62,19 @@ self.addEventListener('fetch', function(event) {
 
   // API呼び出し → ネットワークファースト（失敗時はキャッシュ）
   if (isApiRequest(url)) {
+    // POST/PUT/DELETE はキャッシュ不可 → ネットワークのみ
+    if (event.request.method !== 'GET') {
+      event.respondWith(
+        fetch(event.request).catch(function() {
+          return new Response(
+            JSON.stringify({ ok: false, error: 'オフラインです。電波の届く場所で再度お試しください。' }),
+            { headers: { 'Content-Type': 'application/json' } }
+          );
+        })
+      );
+      return;
+    }
+    // GETリクエスト → ネットワークファースト + キャッシュ保存
     event.respondWith(
       fetch(event.request).then(function(response) {
         // 成功レスポンスをキャッシュに保存（提案データ等のオフライン用）
