@@ -35,22 +35,8 @@ STRIPE_PUBLISHABLE_KEY = ""
 # ============================================================
 # 本番環境
 # ============================================================
-[env.production]
-name = "tsuchinote"
-[env.production.vars]
-APP_URL = "https://tsuchinote.com"
-STRIPE_PRICE_LIGHT = "price_1TF9k09Fc8HnuaokrMmKlFo4"
-STRIPE_PRICE_PRO = "price_1TFA2Y9Fc8Hnuaokitufi136"
-# Stripe公開鍵（Embedded Checkout用）— Cloudflareダッシュボードで本番値を設定
-STRIPE_PUBLISHABLE_KEY = ""
-
 # ============================================================
-# プレビュー環境
+# 注意: Cloudflare Pagesでは env.production/preview は使わない
+# ルートレベルの設定がproduction/preview両方に適用される
+# ダッシュボードの環境変数設定で環境別の値を管理する
 # ============================================================
-[env.preview]
-name = "tsuchinote-staging"
-[env.preview.vars]
-APP_URL = "https://staging.tsuchinote.pages.dev"
-
-# D1 binding verified 2026-04-03
-
