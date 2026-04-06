@@ -13,6 +13,24 @@ function escapeHtml(str) {
     .replace(/'/g, '&#039;');
 }
 
+/** パスワード強度チェック表示を更新する共通関数 */
+function updatePasswordStrength(password, el) {
+  if (!el) return;
+  if (password.length === 0) {
+    el.textContent = '';
+    el.style.color = '';
+  } else if (password.length < 8) {
+    el.textContent = 'あと' + (8 - password.length) + '文字必要です';
+    el.style.color = '#dc2626';
+  } else if (!/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) {
+    el.textContent = '英字と数字の両方を含めてください';
+    el.style.color = '#d97706';
+  } else {
+    el.textContent = 'OK';
+    el.style.color = '#16a34a';
+  }
+}
+
 var TsuchiAPI = (function() {
   'use strict';
 
