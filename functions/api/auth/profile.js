@@ -47,6 +47,12 @@ export async function onRequestPut(context) {
 
   const { name } = body;
   if (!name) return errorResponse('name は必須です');
+  if (typeof name !== 'string' || name.trim().length === 0) {
+    return errorResponse('表示名を入力してください');
+  }
+  if (name.length > 50) {
+    return errorResponse('表示名は50文字以内にしてください');
+  }
 
   await env.DB.prepare(
     'UPDATE users SET name = ?, updated_at = datetime(\'now\') WHERE id = ?'

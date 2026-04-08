@@ -5,6 +5,7 @@
 
 import { requireAuth } from '../../lib/auth-helper.js';
 import { verifyPassword, jsonResponse, errorResponse } from '../../lib/utils.js';
+import { isMockMode, stripeRequest } from '../../lib/stripe-helper.js';
 
 export async function onRequestDelete(context) {
   const { request, env } = context;
@@ -27,7 +28,7 @@ export async function onRequestDelete(context) {
 
   // パスワード検証
   const user = await env.DB.prepare(
-    'SELECT id, password_hash, salt, stripe_customer_id FROM users WHERE id = ?'
+    'SELECT id, password_hash, salt, stripe_customer_id, stripe_subscription_id FROM users WHERE id = ?'
   ).bind(userId).first();
 
   if (!user) {
@@ -37,6 +38,22 @@ export async function onRequestDelete(context) {
   const isValid = await verifyPassword(password, user.password_hash, user.salt);
   if (!isValid) {
     return errorResponse('パスワードが正しくありません', 401);
+  }
+
+  // Stripeサブスクリプションが存在する場合は即座にキャンセル（課金停止）
+  if (user.stripe_subscription_id && !isMockMode(env)) {
+    try {
+      await stripeRequest(
+        `/subscriptions/${user.stripe_subscription_id}`,
+        'DELETE',
+        null,
+        env
+      );
+    } catch (stripeErr) {
+      // Stripeキャンセルに失敗してもアカウント削除は続行
+      // （Stripeの管理画面から手動キャンセル可能）
+      console.error('アカウント削除時のStripeキャンセル失敗:', stripeErr.message);
+    }
   }
 
   // 関連データの完全カスケード削除（子テーブルから順に削除）

@@ -223,7 +223,14 @@ var FarmPage = (function() {
           loadFarms();
         })
         .catch(function(err) {
-          App.toast(err.error || '畑の追加に失敗しました。通信状況を確認してください。', 'error');
+          // プラン制限エラー（403）の場合はアップグレード導線を案内
+          if (err.status === 403) {
+            App.toast('畑の上限に達しました。設定画面からプランをアップグレードできます。', 'error');
+            closeModal();
+            window.location.hash = '#/settings';
+          } else {
+            App.toast(err.error || '畑の追加に失敗しました。通信状況を確認してください。', 'error');
+          }
           throw err;
         });
     });
@@ -292,7 +299,14 @@ var FarmPage = (function() {
           loadCrops(state.selectedFarm.id);
         })
         .catch(function(err) {
-          App.toast(err.error || '作物の追加に失敗しました。通信状況を確認してください。', 'error');
+          // プラン制限エラー（403）の場合はアップグレード導線を案内
+          if (err.status === 403) {
+            App.toast('作物の上限に達しました。設定画面からプランをアップグレードできます。', 'error');
+            closeModal();
+            window.location.hash = '#/settings';
+          } else {
+            App.toast(err.error || '作物の追加に失敗しました。通信状況を確認してください。', 'error');
+          }
           throw err;
         });
     });

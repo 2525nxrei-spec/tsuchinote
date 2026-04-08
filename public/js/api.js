@@ -84,10 +84,17 @@ var TsuchiAPI = (function() {
         return res.json().then(function(data) {
           // 401 → トークン期限切れ、自動ログアウト
           if (res.status === 401) {
-            localStorage.removeItem('tsuchi_token');
-            localStorage.removeItem('tsuchi_user');
-            window.location.hash = '#/login';
-            return Promise.reject({ ok: false, error: 'セッションが切れました。再度ログインしてください。', status: 401 });
+            // ログイン/登録APIへのリクエストの場合はログアウト処理しない（認証エラーをそのまま返す）
+            if (path !== '/auth/login' && path !== '/auth/register') {
+              if (typeof App !== 'undefined' && App.logout) {
+                App.logout('セッションが切れました。再度ログインしてください。');
+              } else {
+                localStorage.removeItem('tsuchi_token');
+                localStorage.removeItem('tsuchi_user');
+                window.location.hash = '#/';
+              }
+            }
+            return Promise.reject({ ok: false, error: data.error || 'セッションが切れました。再度ログインしてください。', status: 401 });
           }
           if (!res.ok || data.ok === false) {
             // ステータスに応じた親切なエラーメッセージ

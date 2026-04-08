@@ -187,6 +187,12 @@ var App = (function() {
 
     // ルーティング開始
     window.addEventListener('hashchange', navigate);
+    // タブが再度表示されたとき（別タブでログアウトした場合等）に認証状態を再チェック
+    document.addEventListener('visibilitychange', function() {
+      if (document.visibilityState === 'visible') {
+        navigate();
+      }
+    });
     navigate();
 
     // ローディング非表示
@@ -212,10 +218,7 @@ var App = (function() {
     function checkSessionTimeout() {
       var lastActivity = parseInt(localStorage.getItem('tsuchi_last_activity') || '0', 10);
       if (lastActivity && Date.now() - lastActivity > SESSION_TIMEOUT && localStorage.getItem('tsuchi_token')) {
-        localStorage.removeItem('tsuchi_token');
-        localStorage.removeItem('tsuchi_user');
-        toast('長時間操作がなかったため、セキュリティのためログアウトしました。', 'warning');
-        window.location.hash = '#/login';
+        logout('長時間操作がなかったため、セキュリティのためログアウトしました。');
       }
     }
     checkSessionTimeout();
@@ -336,6 +339,31 @@ var App = (function() {
     });
   }
 
+  // --- ログアウト共通処理 ---
+
+  /**
+   * ログアウト処理（全localStorage項目をクリアし、LPにリダイレクト）
+   * @param {string} [message] - トースト通知メッセージ（省略時: デフォルトメッセージ）
+   */
+  function logout(message) {
+    localStorage.removeItem('tsuchi_token');
+    localStorage.removeItem('tsuchi_user');
+    localStorage.removeItem('tsuchi_last_activity');
+    localStorage.removeItem('tsuchi_notifications');
+    localStorage.removeItem('tsuchi_welcome');
+    toast(message || 'ログアウトしました');
+    // DOMをクリア（ログアウト後に認証済みページのコンテンツが残らないようにする）
+    var app = document.getElementById('app');
+    if (app) app.innerHTML = '';
+    // ハッシュがすでに#/の場合はhashchangeが発火しないので直接navigate()
+    if (window.location.hash === '#/' || window.location.hash === '') {
+      navigate();
+    } else {
+      window.location.hash = '#/';
+      // hashchangeリスナーがnavigate()を呼ぶ
+    }
+  }
+
   // パブリックAPI
   return {
     toast: toast,
@@ -343,6 +371,7 @@ var App = (function() {
     promptInstall: promptInstall,
     isAuthenticated: isAuthenticated,
     btnLoading: btnLoading,
-    guardSubmit: guardSubmit
+    guardSubmit: guardSubmit,
+    logout: logout
   };
 })();
