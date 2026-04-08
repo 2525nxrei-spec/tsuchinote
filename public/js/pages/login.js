@@ -195,21 +195,7 @@ var LoginPage = (function() {
     var regPwInput = document.getElementById('reg-password');
     if (regPwInput) {
       regPwInput.addEventListener('input', function() {
-        var pw = this.value;
-        var el = document.getElementById('reg-pw-strength');
-        if (!el) return;
-        if (pw.length === 0) {
-          el.textContent = '';
-        } else if (pw.length < 8) {
-          el.textContent = 'あと' + (8 - pw.length) + '文字必要です';
-          el.style.color = '#dc2626';
-        } else if (!/[a-zA-Z]/.test(pw) || !/[0-9]/.test(pw)) {
-          el.textContent = '英字と数字の両方を含めてください';
-          el.style.color = '#d97706';
-        } else {
-          el.textContent = 'OK';
-          el.style.color = '#16a34a';
-        }
+        updatePasswordStrength(this.value, document.getElementById('reg-pw-strength'));
       });
     }
   }

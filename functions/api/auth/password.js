@@ -4,14 +4,7 @@
  */
 
 import { requireAuth } from '../../lib/auth-helper.js';
-import { hashPassword, verifyPassword, jsonResponse, errorResponse } from '../../lib/utils.js';
-
-/** ソルト生成 */
-function generateSalt() {
-  const bytes = new Uint8Array(16);
-  crypto.getRandomValues(bytes);
-  return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
-}
+import { hashPassword, verifyPassword, jsonResponse, errorResponse, generateSalt } from '../../lib/utils.js';
 
 export async function onRequestPut(context) {
   const { request, env } = context;

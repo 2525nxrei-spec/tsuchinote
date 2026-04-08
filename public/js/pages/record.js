@@ -298,7 +298,6 @@ var RecordPage = (function() {
     var filter = document.getElementById('record-farm-filter');
     if (filter) {
       filter.addEventListener('change', function() {
-        // フィルター変更で再読込（将来対応）
         loadRecords();
       });
     }

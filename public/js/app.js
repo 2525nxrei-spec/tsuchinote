@@ -257,7 +257,6 @@ var App = (function() {
       if (e.key === 'Escape') {
         var overlay = document.querySelector('.modal-overlay');
         if (overlay) overlay.remove();
-        /* (リダイレクト型に移行済みのためCheckoutモーダルは不要) */
       }
     });
   }
@@ -336,12 +335,6 @@ var App = (function() {
       }
     });
   }
-
-  // --- ブラウザの戻るボタン対応 ---
-  window.addEventListener('popstate', function() {
-    // hashchangeで既にハンドルされるが、念のためナビゲーション再実行
-    navigate();
-  });
 
   // パブリックAPI
   return {

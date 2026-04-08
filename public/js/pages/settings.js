@@ -372,21 +372,13 @@ var SettingsPage = (function() {
     var newPwInput = document.getElementById('new-pw');
     if (newPwInput) {
       newPwInput.addEventListener('input', function() {
-        var pw = this.value;
         var el = document.getElementById('pw-strength');
-        if (!el) return;
-        if (pw.length === 0) {
-          el.textContent = '8文字以上、英字と数字を含めてください';
-          el.style.color = '#6b7280';
-        } else if (pw.length < 8) {
-          el.textContent = 'あと' + (8 - pw.length) + '文字必要です';
-          el.style.color = '#dc2626';
-        } else if (!/[a-zA-Z]/.test(pw) || !/[0-9]/.test(pw)) {
-          el.textContent = '英字と数字の両方を含めてください';
-          el.style.color = '#d97706';
+        if (this.value.length === 0) {
+          if (el) { el.textContent = '8文字以上、英字と数字を含めてください'; el.style.color = '#6b7280'; }
         } else {
-          el.textContent = 'パスワード強度: OK';
-          el.style.color = '#16a34a';
+          updatePasswordStrength(this.value, el);
+          // settings画面ではOK時に「パスワード強度: 」プレフィックスを付与
+          if (el && el.textContent === 'OK') el.textContent = 'パスワード強度: OK';
         }
       });
     }
