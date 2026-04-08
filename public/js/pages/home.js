@@ -236,7 +236,13 @@ var HomePage = (function() {
           // 天気と提案を並列取得
           return Promise.all([
             TsuchiAPI.weather.getForecast(state.selectedFarmId).catch(function() { return null; }),
-            TsuchiAPI.suggestion.getToday(state.selectedFarmId).catch(function() { return null; })
+            TsuchiAPI.suggestion.getToday(state.selectedFarmId).catch(function(err) {
+              // AI提案の回数上限エラー時はユーザーに通知
+              if (err && err.status === 429) {
+                App.toast('本日のAI提案回数の上限に達しました。設定画面からプランをアップグレードすると回数が増えます。', 'warning');
+              }
+              return null;
+            })
           ]);
         }
         return [null, null];

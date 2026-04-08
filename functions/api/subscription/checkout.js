@@ -37,7 +37,7 @@ export async function onRequestPost(context) {
     // モックモード
     if (isMockMode(env)) {
       return jsonResponse({
-        url: 'https://tsuchinote.com/?payment=success&session_id=mock_session_123',
+        url: 'https://tsuchinote.com/app.html?payment=success&session_id=mock_session_123',
         session_id: 'mock_session_123',
         mock: true,
       });
@@ -66,8 +66,8 @@ export async function onRequestPost(context) {
       'mode': 'subscription',
       'line_items[0][price]': priceId,
       'line_items[0][quantity]': '1',
-      'success_url': `${appUrl}/?payment=success&session_id={CHECKOUT_SESSION_ID}#/settings`,
-      'cancel_url': `${appUrl}/?payment=cancel#/settings`,
+      'success_url': `${appUrl}/app.html?payment=success&session_id={CHECKOUT_SESSION_ID}#/settings`,
+      'cancel_url': `${appUrl}/app.html?payment=cancel#/settings`,
       'client_reference_id': userId,
       'locale': 'ja',
       'metadata[user_id]': userId,

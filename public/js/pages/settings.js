@@ -9,6 +9,19 @@ var SettingsPage = (function() {
 
   var APP_VERSION = '1.1.0';
 
+  /** URLからpaymentパラメータを除去（ブラウザ履歴を書き換えないreplaceState使用） */
+  function cleanPaymentParam() {
+    try {
+      var url = new URL(window.location.href);
+      if (url.searchParams.has('payment') || url.searchParams.has('session_id')) {
+        url.searchParams.delete('payment');
+        url.searchParams.delete('session_id');
+        var cleanUrl = url.pathname + (url.search || '') + url.hash;
+        window.history.replaceState(null, '', cleanUrl);
+      }
+    } catch(e) {}
+  }
+
   // 状態
   var state = {
     user: null,
@@ -82,7 +95,8 @@ var SettingsPage = (function() {
 
   /** 描画 */
   function render() {
-    var user = getUser();
+    // APIから取得したプロフィールを優先、なければlocalStorageのデータを使用
+    var user = state.user || getUser();
     var plan = state.plan;
     var sub = state.subscription;
 
@@ -116,10 +130,13 @@ var SettingsPage = (function() {
       paymentResult = '<div class="alert-banner" style="background:var(--green-light);color:var(--green-dark);margin-bottom:16px;">' +
         '&#10004; 決済が完了しました！プランが更新されます。' +
       '</div>';
+      // URLからpaymentパラメータを除去（リロード時の再表示防止）
+      cleanPaymentParam();
     } else if (paymentParam === 'cancel') {
       paymentResult = '<div class="alert-banner" style="margin-bottom:16px;">' +
         '決済がキャンセルされました。' +
       '</div>';
+      cleanPaymentParam();
     }
 
     return '<div class="page">' +
@@ -440,10 +457,7 @@ var SettingsPage = (function() {
     if (logoutBtn) {
       logoutBtn.addEventListener('click', function() {
         if (!confirm('ログアウトしますか？')) return;
-        localStorage.removeItem('tsuchi_token');
-        localStorage.removeItem('tsuchi_user');
-        App.toast('ログアウトしました');
-        window.location.hash = '#/login';
+        App.logout();
       });
     }
 
@@ -460,10 +474,7 @@ var SettingsPage = (function() {
         TsuchiAPI.auth.deleteAccount(pw)
           .then(function() {
             restore(true);
-            localStorage.removeItem('tsuchi_token');
-            localStorage.removeItem('tsuchi_user');
-            App.toast('アカウントを削除しました。ご利用ありがとうございました。');
-            window.location.hash = '#/login';
+            App.logout('アカウントを削除しました。ご利用ありがとうございました。');
           })
           .catch(function(err) {
             restore(false);
@@ -480,6 +491,36 @@ var SettingsPage = (function() {
         if (res.data) {
           state.plan = res.data.plan || 'free';
           state.subscription = res.data.subscription || null;
+          // localStorageのユーザー情報もプランを同期
+          try {
+            var u = JSON.parse(localStorage.getItem('tsuchi_user')) || {};
+            if (u.plan !== state.plan) {
+              u.plan = state.plan;
+              localStorage.setItem('tsuchi_user', JSON.stringify(u));
+            }
+          } catch(e) {}
+          App.renderCurrentPage();
+        }
+      })
+      .catch(function() {});
+  }
+
+  /** プロフィール情報読み込み（名前・メールをAPIから同期） */
+  function loadProfileInfo() {
+    TsuchiAPI.auth.getProfile()
+      .then(function(res) {
+        if (res.data) {
+          state.user = res.data;
+          // localStorageのユーザー情報を最新に同期
+          try {
+            var u = JSON.parse(localStorage.getItem('tsuchi_user')) || {};
+            u.name = res.data.name;
+            u.email = res.data.email;
+            u.plan = res.data.plan;
+            localStorage.setItem('tsuchi_user', JSON.stringify(u));
+          } catch(e) {}
+          // planも同期
+          state.plan = res.data.plan || state.plan;
           App.renderCurrentPage();
         }
       })
@@ -494,6 +535,7 @@ var SettingsPage = (function() {
       state.notifications = saved === '1';
     }
     loadPlanInfo();
+    loadProfileInfo();
   }
 
   return {
